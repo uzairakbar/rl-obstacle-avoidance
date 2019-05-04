@@ -1,0 +1,237 @@
+% PLEASE FILL IN THE PLACEHOLDERS <...>
+%
+% Diplomarbeit/Studienarbeit/IDP von <NAME>
+% Diploma thesis of <NAME>
+%
+% Title: <TITLE>
+%        <TITLE>
+%
+\documentclass[12pt,a4paper]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% PACKAGES:
+% Define typearea
+% a) Use automatic:
+\usepackage[BCOR1cm]{typearea}
+
+% Use German :
+\usepackage[german, english]{babel}
+% Use list of tabels, etc. in table of contents:
+\usepackage{tocbibind}
+% German paragraph skip
+\usepackage{parskip}
+% Encoder:????
+%\usepackage[utf-8]{inputenc}
+\usepackage[utf8]{inputenc}
+% Use A4-paper efficiently:
+\usepackage{a4wide}
+% Index-generation
+\usepackage{makeidx}
+% Einbinden von URLs:
+\usepackage{url}
+% Include .eps-files (needed also for the LKN-logo):
+%\usepackage{epsf}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+% Special \LaTex symbols (e.g. \BibTeX):
+\usepackage{doc}
+% Include Graphic-files:
+%\usepackage{graphics}
+% Include Graphic-files:
+\usepackage{graphicx}
+\usepackage{pgfgantt}
+% Include doc++ generated tex-files:
+%\usepackage{docxx}
+% Include PDF links
+\usepackage[pdftex, bookmarks=true]{hyperref}
+
+\definecolor{barblue}{RGB}{153,204,254}
+\definecolor{groupblue}{RGB}{51,102,254}
+\definecolor{linkred}{RGB}{165,0,33} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% OTHER SETTINGS:
+
+% Pagestyle:
+\pagestyle{headings}
+
+% Avoid 'overhang':
+\sloppy
+
+% Choose language
+\newcommand{\setlang}[1]{\selectlanguage{#1}\nonfrenchspacing}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% TITLE:
+
+\begin{document}
+
+
+\thispagestyle{empty}
+\newpage
+
+\vspace{5cm}
+
+\parbox{15cm}{\begin{center} {\sf\bf 
+                               \Large  Technische Universität München
+                                \smallskip
+
+                               \Large Lehrstuhl für Datenverarbeitung
+                               \smallskip
+                              }
+
+                            
+              \end{center}}  %&
+
+\vspace{5cm}
+
+\begin{center}
+        {\bf\Huge Applied Reinforcement Learning Project} % Studienarbeit, Interdisziplinäres Projekt
+\end{center}
+
+\begin{center}
+        \settowidth{\baselineskip}{0.4cm}
+        {\LARGE 
+		-Title-
+	    \vspace*{3.5cm}
+        %\LARGE Alperen Gündogan 
+        }
+\end{center}
+
+\begin{center}
+\LARGE Alperen Gündogan, Rachid Ellouze, Uzair Akbar
+\end{center}
+
+\begin{center}
+\large\today
+\end{center}
+
+\vspace*{3.2cm}
+\begin{center}
+    \epsfxsize=3cm
+    \epsfbox{LDVLogoCMYK_oT.pdf}
+    \hspace*{9cm}
+    \epsfxsize=3cm
+    \epsfbox{TUMLogo_oZ_Vollfl_CMYK.pdf}
+\end{center}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% MAIN PART:
+
+%\include{Abstract}
+
+\setlang{english}
+\thispagestyle{plain}
+
+\section{Motivation}
+
+
+\section{Goals}
+
+
+\section{Project Steps}
+
+
+\section{Time Plan}
+
+\begin{figure}
+%\begin{center}
+%\begin{preview}
+
+\noindent\resizebox{\textwidth}{!}{
+%\begin{tikzpicture}[x=.5cm, y=1cm]
+    \begin{ganttchart}[
+	vgrid={*{6}{draw=none},dotted},  % vgrid, 
+    hgrid = true,
+    bar height=.2,
+    x unit = .07cm,
+    y unit title=.6cm,
+    y unit chart=.4cm,
+    milestone/.append style={fill=green},
+    bar/.append style={fill=red},
+    time slot format=isodate,
+    ]{2018-11-01}{2019-04-30}  % <---
+      \gantttitlecalendar{year, month=name}\\
+       \ganttgroup{WP-1}{2018-11-01}{2018-11-25} \\
+       \ganttbar{T1.1}{2018-11-01}{2018-11-15} \\
+       \ganttbar{T1.2}{2018-11-15}{2018-11-25} \\
+       \ganttgroup{WP-2}{2018-11-25}{2018-12-20}\\
+       \ganttbar{T2.1}{2018-11-25}{2018-12-10} \\
+       \ganttbar{T2.2}{2018-12-10}{2018-12-20} \\
+       \ganttmilestone{MS-1}{2018-12-20}\\
+       \ganttgroup{WP-3}{2018-12-20}{2019-01-15}\\
+       \ganttbar{T3.1}{2018-12-20}{2019-01-5} \\ 
+       \ganttbar{T3.2}{2019-01-5}{2019-01-15} \\
+       \ganttgroup{WP-4}{2019-01-015}{2019-04-15}  \\
+       \ganttbar{T4.1}{2019-01-15}{2019-03-15}  \\
+       \ganttmilestone{MS-2}{2019-03-15} \\
+      \ganttbar{T4.2}{2019-03-15}{2019-04-15} \\
+      \ganttgroup{WP-5}{2018-11-25}{2019-04-30} \\
+      \ganttbar{T5.1}{2018-11-25}{2019-04-01} \\
+      \ganttbar{T5.2}{2019-04-01}{2019-04-30} \\
+      \ganttmilestone{MS-3}{2019-04-30}    
+    \end{ganttchart}
+}
+%\end{center}
+%\caption{Gantt Chart}
+\end{figure}
+%\end{preview}
+%
+%\begin{itemize}
+%\item Work Package 1: Thorough literature research. Identification and understanding the relevant work.
+%
+%	\begin{enumerate}
+%	\item Study on 5G - V2X architecture(release 14, TS 23.285).
+%	\item Listing of classical resource management algorithms for LTE and 5G.
+%	\end{enumerate}
+%	
+%\item Work Package 2: Identify, test and learn about the required software libraries.
+%	\begin{enumerate}
+%	\item Learning the protocol stack of 5G - V2X and testing possible V2X examples with the software.
+%	\item Developing a strategy(e.g. flowchart) to implement resource management algorithms into the simulation(\textit{Milestone 1}).
+%	\end{enumerate}
+%	
+%\item Work Package 3: Testing of mostly used 2-3 algorithms in the simulation environment and evaluation of their strengths and weaknesses.
+%	\begin{enumerate}
+%	\item Implementation of the determined algorithms into the simulation.
+%	\item Creating plots: probability of V2V links that satisfy latency requirements vs number of V2V links. Throughput vs number of V2V links. Impact of various allocation time intervals(e.g. 20ms, 100ms etc.).
+%	\end{enumerate}
+%	
+%\item Work Package 4: Design, specification and implementation of a DRL algorithm.
+%	\begin{enumerate}
+%	\item Design and implementation of an algorithm, testing for different scenarios.(\textit{Milestone 2)}.
+%	\item Utilization of the algorithm for better results.
+%	\end{enumerate}
+%
+%\item Work Package 5: Writing final report.
+%	\begin{enumerate}
+%	\item Writing a literature review, algorithm specifications.
+%	\item Comparison of all the results and evaluation of the DRL algorithm(\textit{Milestone 3}).
+%	\end{enumerate}
+%
+%\end{itemize}
+%
+%
+
+%\vspace*{9.2cm}
+
+\subsection{Contengency plan}
+%Cellular V2X is a very novel topic, therefore software libraries and tools are still at the developing stage. One possible problem might be lackness or underdevelopment of some required libraries for the latest C-V2X architecture. In this situation, one should develop short part of the library to be able to implement and test resource management algorithms. 
+
+
+
+% References (Literaturverzeichnis):
+% a) Style (with numbers: use unsrt):
+\bibliographystyle{ieeetr}
+% b) The File:
+\bibliography{Bibliography}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
