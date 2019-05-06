@@ -128,13 +128,25 @@
 \thispagestyle{plain}
 
 \section{Motivation}
-
+Some robotic applications in the real world i.e. autonomous driving, shipping in warehouse are difficult to engineer, therefore a agent that exploits reinforcement learning algorithms would become necessary to tame complex models. The RL agent learns from the interactions i.e. experiences with the real world. The agent does not require a predefined model of the problem and a good design of the algorithm leads to a successful result to solve the complex tasks. The key difference of RL from the other learning algorithms is that the RL considers the whole problem during the learning process while other methods e.g. supervised learning only focuses on sub-problems. In this project, we aim to apply deep reinforcement learning algorithm for obstacle avoidance.
+* Add something about the algorithm that we will choose, advantages and maybe put some references of other papers.
 
 \section{Goals}
-
+\begin{itemize}
+\item The robot can reach the goal position starting from any position.
+\item The robot avoids the collision with obstacles during its path.
+\item The robot moves smoothly and reaches to the goal position as fast as possible.
+\end{itemize}
 
 \section{Project Steps}
-
+\begin{itemize}
+\item Get familiar with the turtlebot2, ROS, sensor, libraries.
+\item Setup the simulation framework.
+\item Implement basic functionalities i.e. movement, rotation, reading sensors etc.
+\item Apply different RL approaches containing algorithms, reward signals and states.
+\item Validation of the final approach.
+\item Final report and presentation.
+\end{itemize}
 
 \section{Time Plan}
 
@@ -154,73 +166,70 @@
     milestone/.append style={fill=green},
     bar/.append style={fill=red},
     time slot format=isodate,
-    ]{2018-11-01}{2019-04-30}  % <---
+    ]{2019-05-06}{2019-07-18}  % <---
       \gantttitlecalendar{year, month=name}\\
-       \ganttgroup{WP-1}{2018-11-01}{2018-11-25} \\
-       \ganttbar{T1.1}{2018-11-01}{2018-11-15} \\
-       \ganttbar{T1.2}{2018-11-15}{2018-11-25} \\
-       \ganttgroup{WP-2}{2018-11-25}{2018-12-20}\\
-       \ganttbar{T2.1}{2018-11-25}{2018-12-10} \\
-       \ganttbar{T2.2}{2018-12-10}{2018-12-20} \\
-       \ganttmilestone{MS-1}{2018-12-20}\\
-       \ganttgroup{WP-3}{2018-12-20}{2019-01-15}\\
-       \ganttbar{T3.1}{2018-12-20}{2019-01-5} \\ 
-       \ganttbar{T3.2}{2019-01-5}{2019-01-15} \\
-       \ganttgroup{WP-4}{2019-01-015}{2019-04-15}  \\
-       \ganttbar{T4.1}{2019-01-15}{2019-03-15}  \\
-       \ganttmilestone{MS-2}{2019-03-15} \\
-      \ganttbar{T4.2}{2019-03-15}{2019-04-15} \\
-      \ganttgroup{WP-5}{2018-11-25}{2019-04-30} \\
-      \ganttbar{T5.1}{2018-11-25}{2019-04-01} \\
-      \ganttbar{T5.2}{2019-04-01}{2019-04-30} \\
-      \ganttmilestone{MS-3}{2019-04-30}    
+       \ganttgroup{WP-1}{2019-05-06}{2019-05-18} \\
+       \ganttgroup{WP-2}{2019-05-18}{2019-05-25}\\
+       \ganttbar{T2.1}{2019-05-18}{2019-05-22} \\
+       \ganttbar{T2.2}{2019-05-22}{2019-05-25} \\
+       \ganttmilestone{MS-1}{2019-05-25}\\
+       \ganttgroup{WP-3}{2019-05-25}{2019-06-05}\\
+       \ganttbar{T3.1}{2019-05-25}{2019-06-01} \\ 
+       \ganttbar{T3.2}{2019-05-25}{2019-06-01} \\
+        \ganttbar{T3.3}{2019-05-25}{2019-06-01} \\ 
+       \ganttbar{T3.4}{2019-06-01}{2019-06-05} \\
+        \ganttmilestone{MS-2}{2019-06-05} \\
+       \ganttgroup{WP-4}{2019-06-05}{2019-07-05}  \\
+        \ganttbar{T4.1}{2019-06-05}{2019-06-15} \\
+         \ganttbar{T4.2}{2019-06-15}{2019-06-25} \\
+        \ganttbar{T4.3}{2019-06-25}{2019-07-05} \\   
+       \ganttgroup{WP-5}{2019-07-05}{2019-07-10}  \\
+       \ganttmilestone{MS-3}{2019-07-10}  \\
+       \ganttgroup{WP-6}{2019-07-10}{2019-07-18}  \\
     \end{ganttchart}
 }
 %\end{center}
 %\caption{Gantt Chart}
 \end{figure}
 %\end{preview}
-%
-%\begin{itemize}
-%\item Work Package 1: Thorough literature research. Identification and understanding the relevant work.
-%
-%	\begin{enumerate}
-%	\item Study on 5G - V2X architecture(release 14, TS 23.285).
-%	\item Listing of classical resource management algorithms for LTE and 5G.
-%	\end{enumerate}
-%	
-%\item Work Package 2: Identify, test and learn about the required software libraries.
-%	\begin{enumerate}
-%	\item Learning the protocol stack of 5G - V2X and testing possible V2X examples with the software.
-%	\item Developing a strategy(e.g. flowchart) to implement resource management algorithms into the simulation(\textit{Milestone 1}).
-%	\end{enumerate}
-%	
-%\item Work Package 3: Testing of mostly used 2-3 algorithms in the simulation environment and evaluation of their strengths and weaknesses.
-%	\begin{enumerate}
-%	\item Implementation of the determined algorithms into the simulation.
-%	\item Creating plots: probability of V2V links that satisfy latency requirements vs number of V2V links. Throughput vs number of V2V links. Impact of various allocation time intervals(e.g. 20ms, 100ms etc.).
-%	\end{enumerate}
-%	
-%\item Work Package 4: Design, specification and implementation of a DRL algorithm.
-%	\begin{enumerate}
-%	\item Design and implementation of an algorithm, testing for different scenarios.(\textit{Milestone 2)}.
-%	\item Utilization of the algorithm for better results.
-%	\end{enumerate}
-%
-%\item Work Package 5: Writing final report.
-%	\begin{enumerate}
-%	\item Writing a literature review, algorithm specifications.
-%	\item Comparison of all the results and evaluation of the DRL algorithm(\textit{Milestone 3}).
-%	\end{enumerate}
-%
-%\end{itemize}
-%
-%
+%%
+\begin{itemize}
+\item Work Package 1: Tutorials(Alperen, Rachid, Uzair)
 
-%\vspace*{9.2cm}
+	\begin{enumerate}
+	\item Practice with ROS, actors, sensors and libraries.
+	\end{enumerate}
+	
+\item Work Package 2: (Alperen, Rachid, Uzair)
+	\begin{enumerate}
+	\item  Setup of the environment and simulation framework.
+	\item Implement basic functionalities.(\textit{Milestone 1}).
+	\end{enumerate}
+	
+\item Work Package 3: Apply a draft algorithm in the simulation environment.
+	\begin{enumerate}
+	\item Feature extraction design (...)
+	\item Reward function and  action space  design (...)
+	\item Implement reinforcement learning algorithm.
+	\item Tests with the simulation and decide for the parameters i.e. discount factor, learning rate.
+	\end{enumerate}
+	
+\item Work Package 4: Test with the real agent and apply different approaches containing algorithms, reward signals and states.
+	\begin{enumerate}
+	\item Approach A (i.e. TD Learning with LFVA)
+	\item Approach B (SARSA($\lambda$))
+	\item Approach C (Q-learning)
+	\end{enumerate}
+	
+\item Work Package 5:  Decide and validate the final approach.
 
-\subsection{Contengency plan}
-%Cellular V2X is a very novel topic, therefore software libraries and tools are still at the developing stage. One possible problem might be lackness or underdevelopment of some required libraries for the latest C-V2X architecture. In this situation, one should develop short part of the library to be able to implement and test resource management algorithms. 
+\item Work Package 6: Presentation and final report.
+
+
+\end{itemize}
+
+
+
 
 
 
