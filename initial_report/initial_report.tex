@@ -1,154 +1,125 @@
-% PLEASE FILL IN THE PLACEHOLDERS <...>
-%
-% Diplomarbeit/Studienarbeit/IDP von <NAME>
-% Diploma thesis of <NAME>
-%
-% Title: <TITLE>
-%        <TITLE>
-%
-\documentclass[12pt,a4paper]{article}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% PACKAGES:
-% Define typearea
-% a) Use automatic:
-\usepackage[BCOR1cm]{typearea}
-
-% Use German :
-\usepackage[german, english]{babel}
-% Use list of tabels, etc. in table of contents:
-\usepackage{tocbibind}
-% German paragraph skip
-\usepackage{parskip}
-% Encoder:????
-%\usepackage[utf-8]{inputenc}
-\usepackage[utf8]{inputenc}
-% Use A4-paper efficiently:
-\usepackage{a4wide}
-% Index-generation
-\usepackage{makeidx}
-% Einbinden von URLs:
-\usepackage{url}
-% Include .eps-files (needed also for the LKN-logo):
-%\usepackage{epsf}
-\usepackage{epsfig}
-\usepackage{epstopdf}
-% Special \LaTex symbols (e.g. \BibTeX):
-\usepackage{doc}
-% Include Graphic-files:
-%\usepackage{graphics}
-% Include Graphic-files:
-\usepackage{graphicx}
+\documentclass{article}
+% \usepackage[utf8]{inputenc}
+\usepackage{titling}
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+% Ganntchart
 \usepackage{pgfgantt}
-% Include doc++ generated tex-files:
-%\usepackage{docxx}
-% Include PDF links
-\usepackage[pdftex, bookmarks=true]{hyperref}
 
-\definecolor{barblue}{RGB}{153,204,254}
-\definecolor{groupblue}{RGB}{51,102,254}
-\definecolor{linkred}{RGB}{165,0,33} 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Applied Reinforcement Learning\\
+        \vspace{-0.20cm}
+        {\large SS 2019}\\
+        \vspace{0.20cm}
+        {Project Proposal --- Obstacle Avoidance}}
 
-% OTHER SETTINGS:
+\author{
+  \small Akbar, Uzair\\
+  \small \texttt{3697290}
+  \and
+  \small G\"undogan Alperen\\
+  \small \texttt{3694565}
+  \and
+  \small Ellouze, Rachid \\
+  \small \texttt{3671114}
+}
 
-% Pagestyle:
-\pagestyle{headings}
+\date{May 16, 2019}
 
-% Avoid 'overhang':
-\sloppy
 
-% Choose language
-\newcommand{\setlang}[1]{\selectlanguage{#1}\nonfrenchspacing}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% TITLE:
 
 \begin{document}
+\begin{titlingpage}
+    \maketitle
+    \begin{abstract}
+        This report presents our project proposal for the TUM Applied Reinforcement Learning class (summer semester 2019). Our proposed application is that of obstacle avoidance, which is a fundamental requirement for autonomous robots which operate in, and interact with, the real world. Conventional path planners for obstacle avoidance require tuning a number of parameters and do not have the ability to scale well with large datasets and continuous use. Therefore, we propose the use of SARSA with Linear Value Function Approximation (LVFA) for obstacle avoidance, where depth-map information is provided. Low dimensional state representations can be extracted using fully convolutional Variational Auto-Encoders (VAEs). We will first train the agent in a simulation environment, and to bridge the reality-gap, we shall use simulation $\rightarrow$ reality `curriculum learning.'
+    \end{abstract}
+    \tableofcontents
+\end{titlingpage}
+% \section*{Abstract}
 
 
-\thispagestyle{empty}
-\newpage
-
-\vspace{5cm}
-
-\parbox{15cm}{\begin{center} {\sf\bf 
-                               \Large  Technische Universität München
-                                \smallskip
-
-                               \Large Lehrstuhl für Datenverarbeitung
-                               \smallskip
-                              }
-
-                            
-              \end{center}}  %&
-
-\vspace{5cm}
-
-\begin{center}
-        {\bf\Huge Applied Reinforcement Learning Project} % Studienarbeit, Interdisziplinäres Projekt
-\end{center}
-
-\begin{center}
-        \settowidth{\baselineskip}{0.4cm}
-        {\LARGE 
-		-Title-
-	    \vspace*{3.5cm}
-        %\LARGE Alperen Gündogan 
-        }
-\end{center}
-
-\begin{center}
-\LARGE Alperen Gündogan, Rachid Ellouze, Uzair Akbar
-\end{center}
-
-\begin{center}
-\large\today
-\end{center}
-
-\vspace*{3.2cm}
-\begin{center}
-    \epsfxsize=3cm
-    \epsfbox{LDVLogoCMYK_oT.pdf}
-    \hspace*{9cm}
-    \epsfxsize=3cm
-    \epsfbox{TUMLogo_oZ_Vollfl_CMYK.pdf}
-\end{center}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% MAIN PART:
-
-%\include{Abstract}
-
-\setlang{english}
-\thispagestyle{plain}
-
-\section{Motivation}
-Some robotic applications in the real world i.e. autonomous driving, shipping in warehouse are difficult to engineer, therefore a agent that exploits reinforcement learning algorithms would become necessary to tame complex models. The RL agent learns from the interactions i.e. experiences with the real world. The agent does not require a predefined model of the problem and a good design of the algorithm leads to a successful result to solve the complex tasks. The key difference of RL from the other learning algorithms is that the RL considers the whole problem during the learning process while other methods e.g. supervised learning only focuses on sub-problems. In this project, we aim to apply deep reinforcement learning algorithm for obstacle avoidance.
-* Add something about the algorithm that we will choose, advantages and maybe put some references of other papers.
-
-\section{Goals}
+\section{Introduction}
+\subsection{Motivation}
+Some robotic applications in the real world i.e. autonomous driving, shipping in warehouse are difficult to engineer, therefore a agent that exploits reinforcement learning algorithms would become necessary to tame complex models. The RL agent learns from the interactions i.e. experiences with the real world. The agent does not require a predefined model of the problem and a good design of the algorithm leads to a successful result to solve the complex tasks. The key difference of RL from the other learning algorithms is that the RL considers the whole problem during the learning process while other methods e.g. supervised learning only focuses on sub-problems. In this project, we aim to apply  reinforcement learning algorithm namely Q-learning with LVFA for obstacle avoidance.
+%TODO maybe add one sentence for why we choose obstacle avoidance task?
+\subsection{Goals}
 \begin{itemize}
-\item The robot can reach the goal position starting from any position.
-\item The robot avoids the collision with obstacles during its path.
-\item The robot moves smoothly and reaches to the goal position as fast as possible.
+\item The turtlebot covers max ground in an episode.
+\item The turtlebot avoids collision.
 \end{itemize}
+\subsection{Problem Definition}
+The problem can be classified as a decision making process where the turtlebot is interacting with environment with a LIDAR sensor. At each time step $t \in [0, T]$, the turtlebot chooses an action $a_t \in A$ based on the current state $s_t$, receives a feedback $r_t$ from the reward function and observe the next state $s_t$. The goal is to maximize the additive reward $R_t = \sum_{\tau=t}^{T}\gamma^{\tau-t}r_{\tau}$, where $\tau$ is the discount factor. 
 
-\section{Project Steps}
-\begin{itemize}
-\item Get familiar with the turtlebot2, ROS, sensor, libraries.
-\item Setup the simulation framework.
-\item Implement basic functionalities i.e. movement, rotation, reading sensors etc.
-\item Apply different RL approaches containing algorithms, reward signals and states.
-\item Validation of the final approach.
-\item Final report and presentation.
-\end{itemize}
+\[
+\Delta w=\eta\left(R(s_{t})+\gamma V(s_{t+1})-V(s_{t})\right)\sum_{k=1}^{t}\lambda^{t-k}\frac{\partial V_{k}}{\partial w}
+\]
 
-\section{Time Plan}
+
+
+
+\section{Solution Approach}
+Based on our preliminary literature review, we have outlined the following approach to solve the given problem using a turtlebot. However these details may be subject to change if required later in the project.
+
+\subsection{Environment Setup}
+\subsubsection{Sensor Model}
+\subsubsection{State Space Definition}
+We shall consider one of two definitions for the state-space $\mathcal{S}$.
+\begin{enumerate}
+    \item $\mathcal{S}_1 := \big\{ s\,\big\vert \, s= [\,d^T\:\vert\,v\,\vert\,w\,]^T \big\}$, where $d$ is the depth map observed from the on-board kinect. To leverage temporal information, $v$ and $w$ are linear and angular velocities of the robot respectively and shall be discretized as
+    \begin{equation*}
+      v\in V := \big\{ 0.4, 0.2\,\si{m.s^{-1}}\big\}, \;w\in W:=\big\{ \frac{\pi}{6}, \frac{\pi}{12}, 0, -\frac{\pi}{12}, -\frac{\pi}{6}\,\si{rad.s^{-1}}\big\}.
+    \end{equation*}
+    \item Later, in order to cater for moving obstacles, we might consider incorporating optical-flow information $o$, so that now the new state-space will be $\mathcal{S}_2 := \big\{ s\,\big\vert \, s = [\,o^T\:\vert\,d^T\:\vert\,v\,\vert\,w\,]^T \big\}$.
+\end{enumerate}
+
+\subsubsection{Action Space Definition}
+The control space $\mathcal{A}$ shall determine the permissible linear and angular velocities for the turtlebot. We aim to discretize the action space in one of two ways.
+\begin{enumerate}
+    \item $\mathcal{A}_1 := \Big\{ a \;\Big\vert\; a = \big(v', w'\big), \;v'\in V, \;w'\in W \Big\}$, where $v'$ and $w'$ are next state linear and angular velocities of the robot respectively. Hence, $\vert \mathcal{A}_1 \vert = 10$.
+    \item A much simpler/smaller action space where $v'$ and $w'$ are ``decoupled,'' e.g. $\mathcal{A}_2 := \big\{ a\; \big\vert \;a \in \mathcal{A}_1\,,\: v' = v \;\lor\; w' = w \big\}$, with $\vert \mathcal{A}_2 \vert = 7$.
+\end{enumerate}
+Due to a smaller action space, a good policy for $\mathcal{A}_2$ should be easier to learn than $\mathcal{A}_1$, however it might be biased given the additional constraints.
+
+\subsubsection{The Reward Function}
+Our task for the turtlebot is for it to go as fast as possible without any collisions. For this, we can employ a simple, action agnostic stage-wise reward function
+\begin{equation*}
+  r(s) =
+  \begin{cases}
+    v \cdot \cos(w) & \text{if episode running,} \\
+    c & \text{if collision.}
+  \end{cases}
+\end{equation*}
+The cosine term penalizes meaningless rotation and $c$ is a large negative reward.
+
+
+% The reward function design can be further improved to guide the robot to avoid from obstacles e.g. higher reward if the robot is further from the obstacles as mentioned in the paper [ref]
+
+%[ref] = Reinforcement Learning for Autonomous Driving Obstacle Avoidance using LIDAR
+%
+%\subsection{Auto-Encoding State Information}
+%Because depth-maps $d$ (and consequently states $s$) obtained directly from kinect can be very high-dimensional, we would like to extract meaningful low-dimensional state representations $\phi(s)$ and work with them instead of the actual state-space. We shall explore using an Auto-Encoder (AE) for unsupervised feature extraction because such an approach would not require meticulously handcrafting features and can scale well with data. The authors in \cite{Lesort2018StateRL} make note of the Variational Auto-Encoder (VAE) \cite{Kingma2014AutoEncodingVB} empirically outperforming vanilla AEs (and variants, e.g. denoising AE) at state representation in a number of RL problems, and therefore it shall be the first approach that we explore.
+%
+%A standard convolutional VAE shall be used to fit an approximate variational posterior $q(\,\psi\,\vert\,d\,)$ over the low-dimensional latents $\psi$ conditioned on depth-maps $d$. We can then sample the posterior for our low dimensional representation of the depth-map as $\psi(d) \sim q(\,\psi\,\vert\,d\,)$. The low-dimensional state-space representation should then be given as $\Phi := \big\{ \phi(s)\,\big\vert \, \phi(s)= [\,\psi(d)^T\:\vert\,v\,\vert\,w\,]^T, s\in\mathcal{S} \big\}$.
+\subsection{The Reinforcement Learning Agent}
+We aim to use SARSA with Linear Value Function Approximation (LVFA) as our RL agent. The rationale for choosing SARSA specifically is 2 fold.
+\begin{enumerate}
+    \item We want to use a model-free approach. Therefore, the obvious candidates were Q-learning and SARSA.
+    \item We wanted to choose a method which is provably convergent (within some bound of the optimal) with LVFA. Hence, Q-learning does not qualify.
+\end{enumerate}
+
+Although non-linear, neural-network based value function approximations have been popular recently in RL literature, we shall be sticking to LVFA as it has theoretical lower bounds on the performance and hence the results are reproducible. This is generally not true for non-LVFA.
+
+The overall update rule for the value function $Q(s, a) \approx \theta^T(a)\phi(s)$ is [ref]
+\begin{equation*}
+\theta_{i+1}(a) = \theta_i(a) + \alpha\Big( r(s) + \gamma \theta_{i}^{T}(a')\phi(s') - \theta_{i}^{T}(a) \phi(s) \Big) \phi(s)
+\end{equation*}
+Where $\theta(a)$, $\alpha$ and $\gamma$ are the LVFA weights for action $a$, learning-rate and discount-factor respectively.
+
+\subsection{Training Environment \& Reality-gap}
+We shall be training the RL agent in a simulation environment using Gazebo. An episode shall end on either a collision, or after $N$ number of steps. For real-world training purposes, collisions can be detected using the turtlebot bumper values. However, before training the RL agent, we would need to train the VAE for feature extraction. For this we need to collect a large amount of training data in the real world. The intuition is that due to the nature of depth-maps (and unlike RGB images), their distribution should be similar enough in both a simulation and the real world that heavy data augmentation can achieve good enough generalization \cite{Xie2017TowardsMV, Singla2018MemorybasedDR}. Should that not be the case, we shall use `curriculum-learning,' where we retrain the RL agent in the real world in an attempt to generalize better.
+%TODO mention about the other simulation environment.
+\section{Project Organization}
+\subsection{Tentative Timeline}
 
 \begin{figure}
 %\begin{center}
@@ -157,12 +128,12 @@ Some robotic applications in the real world i.e. autonomous driving, shipping in
 \noindent\resizebox{\textwidth}{!}{
 %\begin{tikzpicture}[x=.5cm, y=1cm]
     \begin{ganttchart}[
-	vgrid={*{6}{draw=none},dotted},  % vgrid, 
-    hgrid = true,
-    bar height=.2,
-    x unit = .07cm,
-    y unit title=.6cm,
-    y unit chart=.4cm,
+	vgrid={*{3}{draw=none},dotted},  % vgrid, 
+    hgrid,
+    bar height=.1,
+    x unit = 0.6cm,
+    y unit title=0.5cm,
+    y unit chart=1.4cm,
     milestone/.append style={fill=green},
     bar/.append style={fill=red},
     time slot format=isodate,
@@ -176,8 +147,6 @@ Some robotic applications in the real world i.e. autonomous driving, shipping in
        \ganttgroup{WP-3}{2019-05-25}{2019-06-05}\\
        \ganttbar{T3.1}{2019-05-25}{2019-06-01} \\ 
        \ganttbar{T3.2}{2019-05-25}{2019-06-01} \\
-        \ganttbar{T3.3}{2019-05-25}{2019-06-01} \\ 
-       \ganttbar{T3.4}{2019-06-01}{2019-06-05} \\
         \ganttmilestone{MS-2}{2019-06-05} \\
        \ganttgroup{WP-4}{2019-06-05}{2019-07-05}  \\
         \ganttbar{T4.1}{2019-06-05}{2019-06-15} \\
@@ -185,7 +154,7 @@ Some robotic applications in the real world i.e. autonomous driving, shipping in
         \ganttbar{T4.3}{2019-06-25}{2019-07-05} \\   
        \ganttgroup{WP-5}{2019-07-05}{2019-07-10}  \\
        \ganttmilestone{MS-3}{2019-07-10}  \\
-       \ganttgroup{WP-6}{2019-07-10}{2019-07-18}  \\
+       %\ganttgroup{WP-6}{2019-07-10}{2019-07-18}  \\
     \end{ganttchart}
 }
 %\end{center}
@@ -193,54 +162,11 @@ Some robotic applications in the real world i.e. autonomous driving, shipping in
 \end{figure}
 %\end{preview}
 %%
-\begin{itemize}
-\item Work Package 1: Tutorials(Alperen, Rachid, Uzair)
 
-	\begin{enumerate}
-	\item Practice with ROS, actors, sensors and libraries.
-	\end{enumerate}
-	
-\item Work Package 2: (Alperen, Rachid, Uzair)
-	\begin{enumerate}
-	\item  Setup of the environment and simulation framework.
-	\item Implement basic functionalities.(\textit{Milestone 1}).
-	\end{enumerate}
-	
-\item Work Package 3: Apply a draft algorithm in the simulation environment.
-	\begin{enumerate}
-	\item Feature extraction design (...)
-	\item Reward function and  action space  design (...)
-	\item Implement reinforcement learning algorithm.
-	\item Tests with the simulation and decide for the parameters i.e. discount factor, learning rate.
-	\end{enumerate}
-	
-\item Work Package 4: Test with the real agent and apply different approaches containing algorithms, reward signals and states.
-	\begin{enumerate}
-	\item Approach A (i.e. TD Learning with LFVA)
-	\item Approach B (SARSA($\lambda$))
-	\item Approach C (Q-learning)
-	\end{enumerate}
-	
-\item Work Package 5:  Decide and validate the final approach.
-
-\item Work Package 6: Presentation and final report.
-
-
-\end{itemize}
-
-
-
-
-
-
-% References (Literaturverzeichnis):
-% a) Style (with numbers: use unsrt):
+\subsection{Tentative Task Division}
+\medskip
 \bibliographystyle{ieeetr}
-% b) The File:
-\bibliography{Bibliography}
+\bibliography{references}
 
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
