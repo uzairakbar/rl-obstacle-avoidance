@@ -5,6 +5,9 @@
 \usepackage{siunitx}
 % Ganntchart
 \usepackage{pgfgantt}
+\usepackage{physics}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}} 
+
 
 \title{Applied Reinforcement Learning\\
         \vspace{-0.20cm}
@@ -48,12 +51,21 @@ Some robotic applications in the real world i.e. autonomous driving, shipping in
 \item The turtlebot avoids collision.
 \end{itemize}
 \subsection{Problem Definition}
-The problem can be classified as a decision making process where the turtlebot is interacting with environment with a LIDAR sensor. At each time step $t \in [0, T]$, the turtlebot chooses an action $a_t \in A$ based on the current state $s_t$, receives a feedback $r_t$ from the reward function and observe the next state $s_t$. The goal is to maximize the additive reward $R_t = \sum_{\tau=t}^{T}\gamma^{\tau-t}r_{\tau}$, where $\tau$ is the discount factor. 
+The problem can be classified as a decision making process where the turtlebot is interacting with environment with a LIDAR sensor. At each time step $t \in [0, T]$, the turtlebot chooses an action $a_t \in \mathcal{A}$ based on the current state $s_t$, receives a feedback $r_t$ from the reward function and observe the next state $s_t$. The goal is to maximize the additive reward $R_t = \sum_{\tau=t}^{T}\gamma^{\tau-t}r_{\tau}$, where $\tau$ is the discount factor. The Q-value can be defined as $ Q^{\pi}(s_t, a_t)= \mathbb{E}[R_t\,\vert\,s_t,a_t,\pi]$, where $a_t$ is selected $\epsilon$ - greedly in order to tune the trade-off between exploration and exploitation;
 
+\begin{equation*}
+  \pi(a_t\,\vert\,s_t) =
+  \begin{cases}
+    1 - \epsilon & \text{if }  a_t^* = \underset{a_t \in  \mathcal{A}}{\argmax}\: Q(s_t, a_t) \\
+    \epsilon \mathbin{/} (\abs{\mathcal{A}}-1) & \text{otherwise}
+  \end{cases}
+\end{equation*}
+
+Then, the following algorithm Q-value update is applied;
 \[
-\Delta w=\eta\left(R(s_{t})+\gamma V(s_{t+1})-V(s_{t})\right)\sum_{k=1}^{t}\lambda^{t-k}\frac{\partial V_{k}}{\partial w}
+Q(s_t,a_t)\;\leftarrow\;Q(s_t,a_t) + \alpha [ r_{t+1} + \gamma \max_{a_{t+1}}
+Q(s_{t+1},a_{t+1}) - Q(s_t,a_t) ]
 \]
-
 
 
 
@@ -62,6 +74,7 @@ Based on our preliminary literature review, we have outlined the following appro
 
 \subsection{Environment Setup}
 \subsubsection{Sensor Model}
+We will use LIDAR which is divided into $N$ beams over the coverage of $[\theta_{min}, \theta_{max}]$. The appropriate parameters will be decided through the experiments. Each laser returns $x_n$ if it detects an obstacle which denotes the distance of the obstacle, otherwise $d_{max}$. The measurement then is stored into the vector as $d^T = (x_1,...,x_N)$ and is exploited as a state representation.
 \subsubsection{State Space Definition}
 We shall consider one of two definitions for the state-space $\mathcal{S}$.
 \begin{enumerate}
