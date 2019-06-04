@@ -18,8 +18,14 @@ class QLearn2:
     def learn_Q(self, s1, a1, r, s2):
         TD_targer = r + self.gamma * self.Q[s2, :].max()
         TD_err = TD_targer - self.Q[s1, a1]
-
         self.Q[s1, a1] = self.Q[s1, a1] + self.alpha * TD_err
+
+
+    def learn_Q_ellgibility_trace(self, s1, a1, r, s2, E):
+        TD_targer = r + self.gamma * self.Q[s2, :].max()
+        TD_err = TD_targer - self.Q[s1, a1]
+        self.Q = self.Q + self.alpha * E * TD_err
+
 
     def chooseAction(self, s):
         if np.random.rand() < self.epsilon:

@@ -7,9 +7,9 @@ from geometry_msgs.msg import Twist
 from std_srvs.srv import Empty as EmptySrv
 import numpy as np
 
-DISCRETIZE_RANGE = 8
-MAX_RANGE = 7 # max valid range is MAX_RANGE -1
-STEP_TIME = 0.15  # waits 0.2 sec after the action
+DISCRETIZE_RANGE = 6
+MAX_RANGE = 5 # max valid range is MAX_RANGE -1
+STEP_TIME = 0.14  # waits 0.2 sec after the action
 
 ACTION_FORWARD = 0
 ACTION_LEFT = 1
@@ -27,6 +27,7 @@ class Turtlebot_Lidar_Env:
         self.nA = len (self.action_space)
         self.nS = len(self.state_space)
         self.reward_range = (-np.inf, np.inf)
+        self.state_aggregation = "MIN"
 
         # self._seed()
 
@@ -34,6 +35,36 @@ class Turtlebot_Lidar_Env:
         discrete_state = 0
         min_range = 0.3
         done = False
+
+        if self.state_aggregation == "MIN":
+            mod = len(data.ranges) / new_ranges
+            for i in range(new_ranges):
+
+                discrete_state = discrete_state * MAX_RANGE
+                aggregator = min(data.ranges[mod * i : mod * (i+1)])
+
+                if aggregator > 2.5:
+                    aggregator = 4
+                elif aggregator > 1.5:
+                    aggregator = 3
+                elif aggregator > 1:
+                    aggregator = 2
+                elif aggregator > 0.5:
+                    aggregator = 1
+                else:
+                    aggregator = 0
+
+                if np.isnan(aggregator):
+                    discrete_state = discrete_state
+                else:
+                    discrete_state = discrete_state + int(aggregator)
+
+            if min_range > min(data.ranges):
+                done = True
+
+            return discrete_state, done
+
+
         mod = len(data.ranges) / new_ranges
         for i, item in enumerate(data.ranges):
             if (i % mod == 0):
@@ -66,7 +97,7 @@ class Turtlebot_Lidar_Env:
             except:
                 pass
 
-        state = self.discretize_observation(data, DISCRETIZE_RANGE)
+        state, _ = self.discretize_observation(data, DISCRETIZE_RANGE)
 
         return state
 
