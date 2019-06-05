@@ -56,13 +56,13 @@ class Turtlebot_Lidar_Env:
         discrete_state = 0
         min_range = 0.3
         done = False
-
+        ranges = data.ranges[90:270]
         if self.state_aggregation == "MIN":
-            mod = len(data.ranges) / new_ranges
+            mod = len(ranges) / new_ranges
             for i in range(new_ranges):
 
                 discrete_state = discrete_state * MAX_RANGE
-                aggregator = min(data.ranges[mod * i : mod * (i+1)])
+                aggregator = min(ranges[mod * i : mod * (i+1)])
 
                 if aggregator > 2.5:
                     aggregator = 4
