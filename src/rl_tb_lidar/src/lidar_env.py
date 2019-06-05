@@ -56,7 +56,7 @@ class Turtlebot_Lidar_Env:
         discrete_state = 0
         min_range = 0.3
         done = False
-        ranges = data.ranges[90:270]
+        ranges = data.ranges[120:240]
         if self.state_aggregation == "MIN":
             mod = len(ranges) / new_ranges
             for i in range(new_ranges):
