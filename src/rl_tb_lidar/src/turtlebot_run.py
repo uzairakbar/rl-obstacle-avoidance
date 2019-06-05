@@ -12,11 +12,11 @@ if __name__ == '__main__':
     rospy.init_node('rl_agent_tb')
     env = lidar_env.Turtlebot_Lidar_Env()
 
-    base_filename = 'Qlearning'
+    base_filename = 'actionSpace1'
 
     NUM_SIMULATIONS = 5
-    SAVE_FREQ = 5
-    TOTAL_EPISODES = 10
+    SAVE_FREQ = 50
+    TOTAL_EPISODES = 200
 
     qInit = qlearn.QLearn(actions=range(env.nA), states=env.state_space,
                     alpha=0.2, gamma=0.8, epsilon=0.1)
