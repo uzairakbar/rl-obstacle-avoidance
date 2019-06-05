@@ -9,6 +9,8 @@ import qlearn
 import lidar_env
 
 if __name__ == '__main__':
+    base_filename = 'test_filename'
+
     rospy.init_node('rl_agent_tb')
     env = lidar_env.Turtlebot_Lidar_Env()
     
@@ -25,9 +27,14 @@ if __name__ == '__main__':
     
     last_time_steps = numpy.ndarray(0)
 
-    save_freq = 10
+    save_freq = 5
 
-    # qlearn.loadModel("simpleQLearning_with_aggregation_states.npy")
+    try:
+        qlearn.loadModel("Qinit_" + base_filename + ".npy")
+    except:
+        pass
+
+    episodeRewardLog = []
     
     for x in range(total_episodes):
         done = False
@@ -40,7 +47,7 @@ if __name__ == '__main__':
             qlearn.epsilon *= epsilon_discount
 
         E = np.zeros_like(qlearn.Q)
-        for i in range(1500):
+        for i in range(500):
             # Pick an action based on the current state
             action = qlearn.chooseAction(state)
             # Execute the action and get feedback
@@ -65,10 +72,17 @@ if __name__ == '__main__':
             else:
                 last_time_steps = numpy.append(last_time_steps, [int(i + 1)])
                 break
+        
+        episodeRewardLog.append(cumulated_reward)
 
         if x % save_freq == 0:
-            qlearn.saveModel("simpleQLearning_with_aggregation_states_nr_2")
+            print "Saving model and training log with " + base_filename + " as base filename."
+            filename = "Qinit_" + base_filename
+            qlearn.saveModel(filename)
+            filename = "trainingRewardLog_" + base_filename
+            np.save(filename, np.asarray(episodeRewardLog))
 
         m, s = divmod(int(time.time() - start_time), 60)
         h, m = divmod(m, 60)
         print ("EP: "+str(x+1)+" - [alpha: "+str(round(qlearn.alpha,2))+" - gamma: "+str(round(qlearn.gamma,2))+" - epsilon: "+str(round(qlearn.epsilon,2))+"] - Reward: "+str(cumulated_reward)+"     Time: %d:%02d:%02d" % (h, m, s))
+
