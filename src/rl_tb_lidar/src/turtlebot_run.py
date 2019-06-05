@@ -9,80 +9,86 @@ import qlearn
 import lidar_env
 
 if __name__ == '__main__':
-    base_filename = 'test_filename'
-
     rospy.init_node('rl_agent_tb')
     env = lidar_env.Turtlebot_Lidar_Env()
-    
-    qlearn = qlearn.QLearn(actions=range(env.nA), states=env.state_space,
+
+    base_filename = 'Qlearning'
+
+    NUM_SIMULATIONS = 5
+    SAVE_FREQ = 5
+    TOTAL_EPISODES = 10
+
+    qInit = qlearn.QLearn(actions=range(env.nA), states=env.state_space,
                     alpha=0.2, gamma=0.8, epsilon=0.1)
-    
-    initial_epsilon = qlearn.epsilon
-
-    epsilon_discount = 0.9986
-
-    start_time = time.time()
-    total_episodes = 10000
-    highest_reward = 0
-    
-    last_time_steps = numpy.ndarray(0)
-
-    save_freq = 5
 
     try:
-        qlearn.loadModel("Qinit_" + base_filename + ".npy")
+        qInit.loadModel("Qinit_" + base_filename + ".npy")
     except:
         pass
 
-    episodeRewardLog = []
-    
-    for x in range(total_episodes):
-        done = False
-        
-        cumulated_reward = 0 #Should going forward give more reward then L/R ? 
-        
-        state = env.reset_env()
-        
-        if qlearn.epsilon > 0.05:
-            qlearn.epsilon *= epsilon_discount
+    for sim_num in range(NUM_SIMULATIONS):
+        print "-=-=-=-=-=-=-=-=-=-=-= SIMULATION " + str(sim_num + 1) + " =-=-=-=-=-=-=-=-=-=-=-"
 
-        E = np.zeros_like(qlearn.Q)
-        for i in range(500):
-            # Pick an action based on the current state
-            action = qlearn.chooseAction(state)
-            # Execute the action and get feedback
-            nextState, reward, done, info = env.step(action)
-            cumulated_reward += reward
+        qlAgent = qlearn.QLearn(actions=range(env.nA), states=env.state_space,
+                        alpha=0.2, gamma=0.8, epsilon=0.1, Q=qInit.Q)
+        
+        initial_epsilon = qlAgent.epsilon
+
+        epsilon_discount = 0.9986
+
+        start_time = time.time()
+        highest_reward = 0
+        
+        last_time_steps = numpy.ndarray(0)
+
+        episodeRewardLog = []
+        for x in range(TOTAL_EPISODES):
+            done = False
             
-            if highest_reward < cumulated_reward:
-                highest_reward = cumulated_reward
+            cumulated_reward = 0 #Should going forward give more reward then L/R ? 
+            
+            state = env.reset_env()
+            
+            if qlAgent.epsilon > 0.05:
+                qlAgent.epsilon *= epsilon_discount
+
+            E = np.zeros_like(qlAgent.Q)
+            for i in range(500):
+                # Pick an action based on the current state
+                action = qlAgent.chooseAction(state)
+                # Execute the action and get feedback
+                nextState, reward, done, info = env.step(action)
+                cumulated_reward += reward
+                
+                if highest_reward < cumulated_reward:
+                    highest_reward = cumulated_reward
 
 
-            E[state, action] = 1.0
-            qlearn.learn_Q_ellgibility_trace(state, action, reward, nextState, E)
-            E = E * qlearn.gamma
+                E[state, action] = 1.0
+                qlAgent.learn_Q_ellgibility_trace(state, action, reward, nextState, E)
+                E = E * qlAgent.gamma
 
-            #qlearn.learn_Q(state, action, reward, nextState)
+                #qlAgent.learn_Q(state, action, reward, nextState)
+
+                #print "range" , i, "Done ", done
+                if not(done):
+                    state = nextState
+                else:
+                    last_time_steps = numpy.append(last_time_steps, [int(i + 1)])
+                    break
+            
+            episodeRewardLog.append(cumulated_reward)
+
+            if (x + 1) % SAVE_FREQ == 0:
+                print "Saving model and training log with " + base_filename + " as base filename."
+                filename = "Qinit_" + str(sim_num) + base_filename
+                qlAgent.saveModel(filename)
+                filename = "trainingRewardLog_" + str(sim_num) + base_filename
+                np.save(filename, np.asarray(episodeRewardLog))
 
 
-
-            #print "range" , i, "Done ", done
-            if not(done):
-                state = nextState
-            else:
-                last_time_steps = numpy.append(last_time_steps, [int(i + 1)])
-                break
-        
-        episodeRewardLog.append(cumulated_reward)
-
-        if x % save_freq == 0:
-            print "Saving model and training log with " + base_filename + " as base filename."
-            filename = "Qinit_" + base_filename
-            qlearn.saveModel(filename)
-            filename = "trainingRewardLog_" + base_filename
-            np.save(filename, np.asarray(episodeRewardLog))
-
-        m, s = divmod(int(time.time() - start_time), 60)
-        h, m = divmod(m, 60)
-        print ("EP: "+str(x+1)+" - [alpha: "+str(round(qlearn.alpha,2))+" - gamma: "+str(round(qlearn.gamma,2))+" - epsilon: "+str(round(qlearn.epsilon,2))+"] - Reward: "+str(cumulated_reward)+"     Time: %d:%02d:%02d" % (h, m, s))
+            m, s = divmod(int(time.time() - start_time), 60)
+            h, m = divmod(m, 60)
+            print ("EP: "+str(x+1)+" - [alpha: "+str(round(qlAgent.alpha,2))+" - gamma: "+str(round(qlAgent.gamma,2))+" - epsilon: "+str(round(qlAgent.epsilon,2))+"] - Reward: "+str(cumulated_reward)+"     Time: %d:%02d:%02d" % (h, m, s))
+    quit()
 

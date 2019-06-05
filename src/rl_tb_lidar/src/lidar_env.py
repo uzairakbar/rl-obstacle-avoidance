@@ -34,7 +34,7 @@ class Turtlebot_Lidar_Env:
         # self._seed()
 
     def reward_function(self, action, done):
-        c = -200.0
+        c = -10.0
         reward = action[0]*np.cos(action[1])*STEP_TIME
         if done:
             reward = c

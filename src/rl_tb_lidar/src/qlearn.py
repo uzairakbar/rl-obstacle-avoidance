@@ -5,8 +5,11 @@ from ast import literal_eval
 import numpy as np
 
 class QLearn:
-    def __init__(self, actions, states, epsilon, alpha, gamma):
-        self.Q = np.zeros((len(states), len(actions)))
+    def __init__(self, actions, states, epsilon, alpha, gamma, Q = None):
+        if Q is None:
+            self.Q = np.zeros((len(states), len(actions)))
+        else:
+            self.Q = Q
         self.actions = actions
         self.states = states
         self.epsilon = epsilon  # exploration constant
