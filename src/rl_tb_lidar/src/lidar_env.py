@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-
 import rospy
 import time
 from sensor_msgs.msg import LaserScan
@@ -11,25 +10,47 @@ DISCRETIZE_RANGE = 6
 MAX_RANGE = 5 # max valid range is MAX_RANGE -1
 STEP_TIME = 0.14  # waits 0.2 sec after the action
 
-ACTION_FORWARD = 0
-ACTION_LEFT = 1
-ACTION_RIGHT = 2
-
-
 class Turtlebot_Lidar_Env:
-    def __init__(self):
+    def __init__(self, nA = 7):
         self.vel_pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=5)
         # Change this for gazebo implementation.
         rospy.wait_for_service('reset_positions')
         self.reset_stage = rospy.ServiceProxy('reset_positions', EmptySrv)
-        self.action_space = [0, 1, 2]  # F,L,R
         self.state_space = range(MAX_RANGE ** (DISCRETIZE_RANGE))
-        self.nA = len (self.action_space)
         self.nS = len(self.state_space)
         self.reward_range = (-np.inf, np.inf)
         self.state_aggregation = "MIN"
 
+        self.prev_action = np.zeros(2)
+        self.nA = nA
+        self.action_space = list(np.linspace(0, self.nA, 1))
+        linear_velocity_list = [0.4, 0.2]
+        angular_velocity_list = [np.pi/6, np.pi/12, 0., -np.pi/12, -np.pi/6]
+        if self.nA == 7:
+            self.action_table = linear_velocity_list + angular_velocity_list
+        elif self.nA == 10:
+            self.action_table = [np.array([v, w]) for v in linear_velocity_list for w in angular_velocity_list]
+
         # self._seed()
+
+    def reward_function(self, action, done):
+        c = -200.0
+        reward = action[0]*np.cos(action[1])*STEP_TIME
+        if done:
+            reward = c
+        return reward
+
+    def action1(self, action_idx):
+        action = self.prev_action
+        if action_idx < 2:
+            action[0] = self.action_table[action_idx]
+        else:
+            action[1] = self.action_table[action_idx]
+        return action
+
+    def action2(self, action_idx):
+        action = self.action_table[action_idx]
+        return action
 
     def discretize_observation(self, data, new_ranges):
         discrete_state = 0
@@ -101,22 +122,16 @@ class Turtlebot_Lidar_Env:
 
         return state
 
-    def step(self, action):
-        if action == 0:  # FORWARD
-            vel_cmd = Twist()
-            vel_cmd.linear.x = 0.3
-            vel_cmd.angular.z = 0.0
-            self.vel_pub.publish(vel_cmd)
-        elif action == 1:  # LEFT
-            vel_cmd = Twist()
-            vel_cmd.linear.x = 0.05
-            vel_cmd.angular.z = 0.3
-            self.vel_pub.publish(vel_cmd)
-        elif action == 2:  # RIGHT
-            vel_cmd = Twist()
-            vel_cmd.linear.x = 0.05
-            vel_cmd.angular.z = -0.3
-            self.vel_pub.publish(vel_cmd)
+    def step(self, action_idx):
+        if self.nA == 7:
+            action = self.action1(action_idx)
+        elif self.nA == 10:
+            action = self.action2(action_idx)
+
+        vel_cmd = Twist()
+        vel_cmd.linear.x = action[0]
+        vel_cmd.angular.z = action[1]
+        self.vel_pub.publish(vel_cmd)
 
         time.sleep(STEP_TIME)
 
@@ -129,13 +144,8 @@ class Turtlebot_Lidar_Env:
 
         state, done = self.discretize_observation(data, DISCRETIZE_RANGE)
 
-        if not done:
-            if action == 0:
-                reward = 5
-            else:
-                reward = 1
-        else:
-            reward = -200
+        reward = self.reward_function(action, done)
+        self.prev_action = action
 
         return state, reward, done, {}
 

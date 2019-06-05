@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-
 import rospy
 import numpy
 import random
@@ -13,7 +12,7 @@ if __name__ == '__main__':
     rospy.init_node('rl_agent_tb')
     env = lidar_env.Turtlebot_Lidar_Env()
     
-    qlearn = qlearn.QLearn2(actions=range(env.nA), states=env.state_space,
+    qlearn = qlearn.QLearn(actions=range(env.nA), states=env.state_space,
                     alpha=0.2, gamma=0.8, epsilon=0.1)
     
     initial_epsilon = qlearn.epsilon
@@ -28,7 +27,7 @@ if __name__ == '__main__':
 
     save_freq = 10
 
-    qlearn.loadModel("simpleQLearning_with_aggregation_states.npy")
+    # qlearn.loadModel("simpleQLearning_with_aggregation_states.npy")
     
     for x in range(total_episodes):
         done = False
