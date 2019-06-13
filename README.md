@@ -1,6 +1,8 @@
 # group-d
 
 Project of Group D
+
+Running the application
 Option 1
 1.  Move the package to your "catkin_ws"
 2.  run "catkin_make" in the "catkin_ws" directory .
