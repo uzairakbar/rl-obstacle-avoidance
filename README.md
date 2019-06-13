@@ -2,7 +2,7 @@
 
 Project of Group D
 
-Running the application
+Running the application;
 
 Option 1
 1.  Move the package to your "catkin_ws"
