@@ -1,0 +1,8 @@
+<launch>
+    <param name="/use_sim_time" value="true"/>
+    <node pkg="stage_ros" name="stageros" type="stageros" args="-g $(find stage_ros)/world/intense.world"/>
+
+    <test test-name="intensity_check" pkg="stage_ros" type="intensity_test.py" name="scan_intensity_test">
+        <param name="scan_topic" value="base_scan" />
+    </test>
+</launch>

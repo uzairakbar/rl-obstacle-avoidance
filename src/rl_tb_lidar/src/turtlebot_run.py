@@ -7,16 +7,24 @@ import time
 import numpy as np
 import qlearn
 import lidar_env
+import sys
+
 
 if __name__ == '__main__':
-    rospy.init_node('rl_agent_tb')
-    env = lidar_env.Turtlebot_Lidar_Env()
+    if len(sys.argv) < 2:
+        print('Arguments: <input file> <output file>', len(sys.argv))
+        sys.exit(1)
+    script = sys.argv[0]
+    map = sys.argv[1]
 
-    base_filename = 'actionSpace1'
+    rospy.init_node('rl_agent_tb')
+    env = lidar_env.Turtlebot_Lidar_Env(map)
+
+    base_filename = 'Qlearning'
 
     NUM_SIMULATIONS = 5
-    SAVE_FREQ = 50
-    TOTAL_EPISODES = 200
+    SAVE_FREQ = 5
+    TOTAL_EPISODES = 10
 
     qInit = qlearn.QLearn(actions=range(env.nA), states=env.state_space,
                     alpha=0.2, gamma=0.8, epsilon=0.1)
@@ -59,7 +67,7 @@ if __name__ == '__main__':
                 # Execute the action and get feedback
                 nextState, reward, done, info = env.step(action)
                 cumulated_reward += reward
-                
+
                 if highest_reward < cumulated_reward:
                     highest_reward = cumulated_reward
 
@@ -91,4 +99,3 @@ if __name__ == '__main__':
             h, m = divmod(m, 60)
             print ("EP: "+str(x+1)+" - [alpha: "+str(round(qlAgent.alpha,2))+" - gamma: "+str(round(qlAgent.gamma,2))+" - epsilon: "+str(round(qlAgent.epsilon,2))+"] - Reward: "+str(cumulated_reward)+"     Time: %d:%02d:%02d" % (h, m, s))
     quit()
-

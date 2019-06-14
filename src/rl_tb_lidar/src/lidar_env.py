@@ -1,26 +1,37 @@
 #! /usr/bin/env python
 import rospy
 import time
+import random
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Pose
+from nav_msgs.msg import Odometry
+from std_msgs.msg import Int8
 from std_srvs.srv import Empty as EmptySrv
 import numpy as np
+
+
 
 DISCRETIZE_RANGE = 6
 MAX_RANGE = 5 # max valid range is MAX_RANGE -1
 STEP_TIME = 0.14  # waits 0.2 sec after the action
 
+is_crashed = False
+
 class Turtlebot_Lidar_Env:
-    def __init__(self, nA = 7):
+    def __init__(self, map, nA = 7):
         self.vel_pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=5)
         # Change this for gazebo implementation.
         rospy.wait_for_service('reset_positions')
         self.reset_stage = rospy.ServiceProxy('reset_positions', EmptySrv)
+        self.teleporter = rospy.Publisher('/cmd_pose', Pose, queue_size=10)
+        self.crash_tracker = rospy.Subscriber('/odom', Odometry, self.crash_callback)
         self.state_space = range(MAX_RANGE ** (DISCRETIZE_RANGE))
         self.nS = len(self.state_space)
         self.reward_range = (-np.inf, np.inf)
         self.state_aggregation = "MIN"
 
+        self.map = map
         self.prev_action = np.zeros(2)
         self.nA = nA
         self.action_space = list(np.linspace(0, self.nA, 1))
@@ -56,13 +67,13 @@ class Turtlebot_Lidar_Env:
         discrete_state = 0
         min_range = 0.3
         done = False
-        ranges = data.ranges[120:240]
+
         if self.state_aggregation == "MIN":
-            mod = len(ranges) / new_ranges
+            mod = len(data.ranges) / new_ranges
             for i in range(new_ranges):
 
                 discrete_state = discrete_state * MAX_RANGE
-                aggregator = min(ranges[mod * i : mod * (i+1)])
+                aggregator = min(data.ranges[mod * i : mod * (i+1)])
 
                 if aggregator > 2.5:
                     aggregator = 4
@@ -80,8 +91,11 @@ class Turtlebot_Lidar_Env:
                 else:
                     discrete_state = discrete_state + int(aggregator)
 
-            if min_range > min(data.ranges):
+            #if min_range > min(data.ranges):
+                #done = True
+            if is_crashed:
                 done = True
+                #self.teleport_random()
 
             return discrete_state, done
 
@@ -103,10 +117,12 @@ class Turtlebot_Lidar_Env:
 
 
     def reset_env(self):
-        rospy.wait_for_service('reset_positions')
+        #rospy.wait_for_service('reset_positions')
         try:
             # reset_proxy.call()
-            self.reset_stage()
+            #self.reset_stage()
+            #self.teleport_random()
+            self.teleport_predefined()
         except (rospy.ServiceException) as e:
             print ("reset_simulation service call failed")
 
@@ -149,3 +165,93 @@ class Turtlebot_Lidar_Env:
 
         return state, reward, done, {}
 
+    def teleport_random(self):
+        """
+        Teleport the robot to a new random position on map
+        """
+        x_min = 0  # bounds of the map
+        x_max = 10
+        y_min = 0
+        y_max = 10
+
+        # Randomly generate a pose
+        cmd_pose = Pose()
+        cmd_pose.position.x = random.uniform(x_min, x_max)
+        cmd_pose.position.y = random.uniform(y_min, y_max)
+
+        cmd_pose.orientation.z = random.uniform(-7,7)   # janky way of getting most of the angles from a quaternarion
+        cmd_pose.orientation.w = random.uniform(-1, 1)
+        #cmd_pose.orientation.w = 1
+
+        # ... and publish it as the new pose of the robot
+        time.sleep(0.3)
+        self.teleporter.publish(cmd_pose)
+        time.sleep(0.3)   # wait (in real time) before and after jumping to avoid segfaults
+
+    def teleport_predefined(self):
+        r = random.randint(1, 5)
+        cmd_pose = Pose()
+        cmd_pose.orientation.z = random.uniform(-7, 7)
+        cmd_pose.orientation.w = random.uniform(-1, 1)
+        if self.map == "map1":
+            if r == 1:
+                cmd_pose.position.x = 1.0
+                cmd_pose.position.y = 2.0
+            elif r == 2:
+                cmd_pose.position.x = 5.0
+                cmd_pose.position.y = 5.0
+            elif r ==3:
+                cmd_pose.position.x = 7.0
+                cmd_pose.position.y = 8.0
+            elif r==4:
+                cmd_pose.position.x = 3.0
+                cmd_pose.position.y = 1.0
+            else:
+                cmd_pose.position.x = 6.0
+                cmd_pose.position.y = 2.0
+        elif self.map == "map2":
+            if r == 1:
+                cmd_pose.position.x = 2.0
+                cmd_pose.position.y = 2.0
+            elif r == 2:
+                cmd_pose.position.x = 7.0
+                cmd_pose.position.y = 8.0
+            elif r ==3:
+                cmd_pose.position.x = 2.0
+                cmd_pose.position.y = 5.0
+            elif r==4:
+                cmd_pose.position.x = 8.0
+                cmd_pose.position.y = 3.0
+            else:
+                cmd_pose.position.x = 1.0
+                cmd_pose.position.y = 7.0
+        elif self.map == "map3":
+            if r == 1:
+                cmd_pose.position.x = 2.0
+                cmd_pose.position.y = 2.0
+            elif r == 2:
+                cmd_pose.position.x = 5.0
+                cmd_pose.position.y = 5.0
+            elif r ==3:
+                cmd_pose.position.x = 1.0
+                cmd_pose.position.y = 6.0
+            elif r==4:
+                cmd_pose.position.x = 5.0
+                cmd_pose.position.y = 8.0
+            else:
+                cmd_pose.position.x = 8.0
+                cmd_pose.position.y = 4.0
+        else:
+            print "ERROR: Map is not defined"
+
+        # ... and publish it as the new pose of the robot
+        time.sleep(0.3)
+        self.teleporter.publish(cmd_pose)
+        time.sleep(0.3)   # wait (in real time) before and after jumping to avoid segfaults
+
+    def crash_callback(self, data):
+        global is_crashed
+        if data.twist.twist.angular.z:
+            is_crashed = True
+        else:
+            is_crashed = False

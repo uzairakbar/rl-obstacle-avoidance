@@ -35,14 +35,13 @@
         Args:
           -g : run in headless mode.
   --> 
-  <node pkg="stage_ros" type="stageros" name="stageros" args="$(arg world_file)">
+  <node pkg="stage_ros_u" type="stageros" name="stageros" args="$(arg world_file)">
     <param name="base_watchdog_timeout" value="0.5"/>
     <remap from="odom" to="odom"/>
     <remap from="base_pose_ground_truth" to="base_pose_ground_truth"/>
     <remap from="cmd_vel" to="mobile_base/commands/velocity"/>
     <remap from="base_scan" to="scan"/>
   </node>
-
   <!--  ***************** Robot Model *****************  -->
   <include file="$(find turtlebot_bringup)/launch/includes/robot.launch.xml">
     <arg name="base" value="$(arg base)" />
