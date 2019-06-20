@@ -1,7 +1,7 @@
 # Applied Reinforcement Learning (SS2019)
 ## Group D
 
-Instructions:
+Instructions for Stage Simulator:
 
 1. Move the `rl_tb_lidar` and `stage_ros_u` folders to `catkin_ws/src` directory.
 2. run `catkin_make` in the `catkin_ws` directory.
