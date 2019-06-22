@@ -10,33 +10,36 @@ from std_msgs.msg import Int8
 from std_srvs.srv import Empty as EmptySrv
 import numpy as np
 
-
-
 DISCRETIZE_RANGE = 6
-MAX_RANGE = 5 # max valid range is MAX_RANGE -1
+MAX_RANGE = 5  # max valid range is MAX_RANGE -1
 STEP_TIME = 0.14  # waits 0.2 sec after the action
 
 is_crashed = False
 
+
 class Turtlebot_Lidar_Env:
-    def __init__(self, map, nA = 7):
+    def __init__(self, nA=10):
+        # TODO check how to send a command to move robot.
         self.vel_pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=5)
         # Change this for gazebo implementation.
-        rospy.wait_for_service('reset_positions')
-        self.reset_stage = rospy.ServiceProxy('reset_positions', EmptySrv)
-        self.teleporter = rospy.Publisher('/cmd_pose', Pose, queue_size=10)
+        # rospy.wait_for_service('reset_positions')
+
+        # self.reset_stage = rospy.ServiceProxy('reset_positions', EmptySrv)
+        # self.teleporter = rospy.Publisher('/cmd_pose', Pose, queue_size=10)
+        # TODO change this part to track /bumper topic in order to understand the crash
+        # Change also the callback function such that if the turtlebot hit an obstacle it moves back e.g. 0.5m and continue from that state.
         self.crash_tracker = rospy.Subscriber('/odom', Odometry, self.crash_callback)
         self.state_space = range(MAX_RANGE ** (DISCRETIZE_RANGE))
         self.nS = len(self.state_space)
         self.reward_range = (-np.inf, np.inf)
         self.state_aggregation = "MIN"
 
-        self.map = map
+        # self.map = map
         self.prev_action = np.zeros(2)
         self.nA = nA
         self.action_space = list(np.linspace(0, self.nA, 1))
         linear_velocity_list = [0.4, 0.2]
-        angular_velocity_list = [np.pi/6, np.pi/12, 0., -np.pi/12, -np.pi/6]
+        angular_velocity_list = [np.pi / 6, np.pi / 12, 0., -np.pi / 12, -np.pi / 6]
         if self.nA == 7:
             self.action_table = linear_velocity_list + angular_velocity_list
         elif self.nA == 10:
@@ -46,7 +49,7 @@ class Turtlebot_Lidar_Env:
 
     def reward_function(self, action, done):
         c = -10.0
-        reward = action[0]*np.cos(action[1])*STEP_TIME
+        reward = action[0] * np.cos(action[1]) * STEP_TIME
         if done:
             reward = c
         return reward
@@ -73,7 +76,7 @@ class Turtlebot_Lidar_Env:
             for i in range(new_ranges):
 
                 discrete_state = discrete_state * MAX_RANGE
-                aggregator = min(data.ranges[mod * i : mod * (i+1)])
+                aggregator = min(data.ranges[mod * i: mod * (i + 1)])
 
                 if aggregator > 2.5:
                     aggregator = 4
@@ -91,14 +94,13 @@ class Turtlebot_Lidar_Env:
                 else:
                     discrete_state = discrete_state + int(aggregator)
 
-            #if min_range > min(data.ranges):
-                #done = True
+            # if min_range > min(data.ranges):
+            # done = True
             if is_crashed:
                 done = True
-                #self.teleport_random()
+                # self.teleport_random()
 
             return discrete_state, done
-
 
         mod = len(data.ranges) / new_ranges
         for i, item in enumerate(data.ranges):
@@ -106,22 +108,21 @@ class Turtlebot_Lidar_Env:
                 discrete_state = discrete_state * MAX_RANGE
 
                 if data.ranges[i] == float('Inf') or np.isinf(data.ranges[i]):
-                    discrete_state = discrete_state +  6
+                    discrete_state = discrete_state + 6
                 elif np.isnan(data.ranges[i]):
                     discrete_state = discrete_state
                 else:
-                    discrete_state = discrete_state  + int (data.ranges[i])
+                    discrete_state = discrete_state + int(data.ranges[i])
             if (min_range > data.ranges[i] > 0):
                 done = True
         return discrete_state, done
 
-
     def reset_env(self):
-        #rospy.wait_for_service('reset_positions')
+        # rospy.wait_for_service('reset_positions')
         try:
             # reset_proxy.call()
-            #self.reset_stage()
-            #self.teleport_random()
+            # self.reset_stage()
+            # self.teleport_random()
             self.teleport_predefined()
         except (rospy.ServiceException) as e:
             print ("reset_simulation service call failed")
@@ -179,14 +180,14 @@ class Turtlebot_Lidar_Env:
         cmd_pose.position.x = random.uniform(x_min, x_max)
         cmd_pose.position.y = random.uniform(y_min, y_max)
 
-        cmd_pose.orientation.z = random.uniform(-7,7)   # janky way of getting most of the angles from a quaternarion
+        cmd_pose.orientation.z = random.uniform(-7, 7)  # janky way of getting most of the angles from a quaternarion
         cmd_pose.orientation.w = random.uniform(-1, 1)
-        #cmd_pose.orientation.w = 1
+        # cmd_pose.orientation.w = 1
 
         # ... and publish it as the new pose of the robot
         time.sleep(0.3)
         self.teleporter.publish(cmd_pose)
-        time.sleep(0.3)   # wait (in real time) before and after jumping to avoid segfaults
+        time.sleep(0.3)  # wait (in real time) before and after jumping to avoid segfaults
 
     def teleport_predefined(self):
         r = random.randint(1, 5)
@@ -200,10 +201,10 @@ class Turtlebot_Lidar_Env:
             elif r == 2:
                 cmd_pose.position.x = 5.0
                 cmd_pose.position.y = 5.0
-            elif r ==3:
+            elif r == 3:
                 cmd_pose.position.x = 7.0
                 cmd_pose.position.y = 8.0
-            elif r==4:
+            elif r == 4:
                 cmd_pose.position.x = 3.0
                 cmd_pose.position.y = 1.0
             else:
@@ -216,10 +217,10 @@ class Turtlebot_Lidar_Env:
             elif r == 2:
                 cmd_pose.position.x = 7.0
                 cmd_pose.position.y = 8.0
-            elif r ==3:
+            elif r == 3:
                 cmd_pose.position.x = 2.0
                 cmd_pose.position.y = 5.0
-            elif r==4:
+            elif r == 4:
                 cmd_pose.position.x = 8.0
                 cmd_pose.position.y = 3.0
             else:
@@ -232,10 +233,10 @@ class Turtlebot_Lidar_Env:
             elif r == 2:
                 cmd_pose.position.x = 5.0
                 cmd_pose.position.y = 5.0
-            elif r ==3:
+            elif r == 3:
                 cmd_pose.position.x = 1.0
                 cmd_pose.position.y = 6.0
-            elif r==4:
+            elif r == 4:
                 cmd_pose.position.x = 5.0
                 cmd_pose.position.y = 8.0
             else:
@@ -247,7 +248,7 @@ class Turtlebot_Lidar_Env:
         # ... and publish it as the new pose of the robot
         time.sleep(0.3)
         self.teleporter.publish(cmd_pose)
-        time.sleep(0.3)   # wait (in real time) before and after jumping to avoid segfaults
+        time.sleep(0.3)  # wait (in real time) before and after jumping to avoid segfaults
 
     def crash_callback(self, data):
         global is_crashed
@@ -255,3 +256,41 @@ class Turtlebot_Lidar_Env:
             is_crashed = True
         else:
             is_crashed = False
+
+    def on_shutdown(self):
+        # rospy.loginfo("[%s] Shutting down." %(self.node_name))
+        rospy.loginfo("Shutting down....")
+        self.stop_moving()
+        # rospy.loginfo("Stopped %s's velocity." %(self.veh_name))
+
+    def stop_moving(self):
+        twist = Twist()
+        self.vel_pub.publish(twist)
+
+    def handle_collision(self, last_action):
+        # Apply the reverse action to move the bumper back.
+        if self.nA == 7:
+            action = self.action1(last_action)
+        elif self.nA == 10:
+            action = self.action2(last_action)
+
+        vel_cmd = Twist()
+        vel_cmd.linear.x = action[0] * (-3)
+        vel_cmd.angular.z = -action[1]
+        self.vel_pub.publish(vel_cmd)
+
+        time.sleep(STEP_TIME)
+
+        # read laser data
+        data = None
+        while data is None:
+            try:
+                data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+            except:
+                pass
+
+        state, _ = self.discretize_observation(data, DISCRETIZE_RANGE)
+
+        return state
+
+
