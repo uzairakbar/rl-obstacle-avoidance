@@ -9,6 +9,7 @@ from nav_msgs.msg import Odometry
 from std_msgs.msg import Int8
 from std_srvs.srv import Empty as EmptySrv
 import numpy as np
+from kobuki_msgs.msg import BumperEvent
 
 DISCRETIZE_RANGE = 6
 MAX_RANGE = 5  # max valid range is MAX_RANGE -1
@@ -29,6 +30,8 @@ class Turtlebot_Lidar_Env:
         # TODO change this part to track /bumper topic in order to understand the crash
         # Change also the callback function such that if the turtlebot hit an obstacle it moves back e.g. 0.5m and continue from that state.
         self.crash_tracker = rospy.Subscriber('/odom', Odometry, self.crash_callback)
+        self.bumber_sub = rospy.Subscriber('mobile_base/events/bumper', BumperEvent, self.process_bump)
+
         self.state_space = range(MAX_RANGE ** (DISCRETIZE_RANGE))
         self.nS = len(self.state_space)
         self.reward_range = (-np.inf, np.inf)
@@ -46,7 +49,16 @@ class Turtlebot_Lidar_Env:
             self.action_table = [np.array([v, w]) for v in linear_velocity_list for w in angular_velocity_list]
 
         # self._seed()
-
+    def process_bump(self, data):
+        print ("Bump")
+        global bump#is_crashed
+        if (data.state == BumperEvent.PRESSED):
+            bump = True
+        else:
+            bump = False
+        rospy.loginfo("Bumper Event")
+        rospy.loginfo(data.bumper)
+        
     def reward_function(self, action, done):
         c = -10.0
         reward = action[0] * np.cos(action[1]) * STEP_TIME
