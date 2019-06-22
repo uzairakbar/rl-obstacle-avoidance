@@ -6,11 +6,10 @@ import time
 
 import numpy as np
 import qlearn
-import lidar_env
+import lidar_env as en
 import sys
 from sensor_msgs.msg import LaserScan
 
-DISCRETIZE_RANGE = 6
 
 def handle_collision(env, agent, base_filename, episodeRewardLog, last_action):
     print "Saving model and training log with " + base_filename + " as base filename."
@@ -24,13 +23,13 @@ def handle_collision(env, agent, base_filename, episodeRewardLog, last_action):
 
 def run():
     rospy.init_node('rl_agent_tb')
-    env = lidar_env.Turtlebot_Lidar_Env()
+    env = en.Turtlebot_Lidar_Env()
     base_filename = 'Qlearning'
     # Save the last Q-table.
     rospy.on_shutdown(env.on_shutdown)
 
     qInit = qlearn.QLearn(actions=range(env.nA), states=env.state_space,
-                          alpha=0.2, gamma=0.8, epsilon=0.1)
+                          alpha=en.Config.Q_ALPHA, gamma=en.Config.Q_GAMMA, epsilon=en.Config.Q_EPSILON)
     try:
         qInit.loadModel("Qinit_" + base_filename + ".npy")
     except:
@@ -38,7 +37,7 @@ def run():
         pass
 
     qlAgent = qlearn.QLearn(actions=range(env.nA), states=env.state_space,
-                        alpha=0.2, gamma=0.8, epsilon=0.1, Q=qInit.Q)
+                        alpha=en.Config.Q_ALPHA, gamma=en.Config.Q_GAMMA, epsilon=en.Config.Q_EPSILON, Q=qInit.Q)
     start_time = time.time()
     highest_reward = 0
     last_time_steps = numpy.ndarray(0)
@@ -48,11 +47,10 @@ def run():
     while data is None:
         try:
             data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
-            print "A"
         except:
             pass
 
-    state, _ = env.discretize_observation(data, DISCRETIZE_RANGE)
+    state, _ = env.discretize_observation(data, en.Config.DISCRETIZE_RANGE)
 
     E = np.zeros_like(qlAgent.Q)
     print state
@@ -76,9 +74,7 @@ def run():
 
         if not (done):
             state = nextState
-            print "C"
         else:
-            print "D"
             last_time_steps = numpy.append(last_time_steps, [int(i + 1)])
             i = i + 1
             episodeRewardLog.append(cumulated_reward)

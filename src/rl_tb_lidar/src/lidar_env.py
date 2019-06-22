@@ -9,11 +9,10 @@ from nav_msgs.msg import Odometry
 from std_msgs.msg import Int8
 from std_srvs.srv import Empty as EmptySrv
 import numpy as np
+
 from kobuki_msgs.msg import BumperEvent
 
-DISCRETIZE_RANGE = 6
-MAX_RANGE = 5  # max valid range is MAX_RANGE -1
-STEP_TIME = 0.14  # waits 0.2 sec after the action
+
 
 is_crashed = False
 
@@ -30,9 +29,9 @@ class Turtlebot_Lidar_Env:
         # TODO change this part to track /bumper topic in order to understand the crash
         # Change also the callback function such that if the turtlebot hit an obstacle it moves back e.g. 0.5m and continue from that state.
         self.crash_tracker = rospy.Subscriber('/odom', Odometry, self.crash_callback)
-        self.bumber_sub = rospy.Subscriber('mobile_base/events/bumper', BumperEvent, self.process_bump)
 
-        self.state_space = range(MAX_RANGE ** (DISCRETIZE_RANGE))
+        self.bumber_sub = rospy.Subscriber('mobile_base/events/bumper', BumperEvent, self.process_bump)
+        self.state_space = range(Config.MAX_RANGE ** (Config.DISCRETIZE_RANGE))
         self.nS = len(self.state_space)
         self.reward_range = (-np.inf, np.inf)
         self.state_aggregation = "MIN"
@@ -49,6 +48,7 @@ class Turtlebot_Lidar_Env:
             self.action_table = [np.array([v, w]) for v in linear_velocity_list for w in angular_velocity_list]
 
         # self._seed()
+
     def process_bump(self, data):
         print ("Bump")
         global bump#is_crashed
@@ -58,10 +58,18 @@ class Turtlebot_Lidar_Env:
             bump = False
         rospy.loginfo("Bumper Event")
         rospy.loginfo(data.bumper)
-        
+
+    def crash_callback(self, data):
+        global is_crashed
+        if data.twist.twist.angular.z:
+            is_crashed = True
+        else:
+            is_crashed = False
+
+
     def reward_function(self, action, done):
         c = -10.0
-        reward = action[0] * np.cos(action[1]) * STEP_TIME
+        reward = action[0] * np.cos(action[1]) * Config.STEP_TIME
         if done:
             reward = c
         return reward
@@ -87,7 +95,7 @@ class Turtlebot_Lidar_Env:
             mod = len(data.ranges) / new_ranges
             for i in range(new_ranges):
 
-                discrete_state = discrete_state * MAX_RANGE
+                discrete_state = discrete_state * Config.MAX_RANGE
                 aggregator = min(data.ranges[mod * i: mod * (i + 1)])
 
                 if aggregator > 2.5:
@@ -117,7 +125,7 @@ class Turtlebot_Lidar_Env:
         mod = len(data.ranges) / new_ranges
         for i, item in enumerate(data.ranges):
             if (i % mod == 0):
-                discrete_state = discrete_state * MAX_RANGE
+                discrete_state = discrete_state * Config.MAX_RANGE
 
                 if data.ranges[i] == float('Inf') or np.isinf(data.ranges[i]):
                     discrete_state = discrete_state + 6
@@ -147,7 +155,7 @@ class Turtlebot_Lidar_Env:
             except:
                 pass
 
-        state, _ = self.discretize_observation(data, DISCRETIZE_RANGE)
+        state, _ = self.discretize_observation(data, Config.DISCRETIZE_RANGE)
 
         return state
 
@@ -162,7 +170,7 @@ class Turtlebot_Lidar_Env:
         vel_cmd.angular.z = action[1]
         self.vel_pub.publish(vel_cmd)
 
-        time.sleep(STEP_TIME)
+        time.sleep(Config.STEP_TIME)
 
         data = None
         while data is None:
@@ -171,7 +179,7 @@ class Turtlebot_Lidar_Env:
             except:
                 pass
 
-        state, done = self.discretize_observation(data, DISCRETIZE_RANGE)
+        state, done = self.discretize_observation(data, Config.DISCRETIZE_RANGE)
 
         reward = self.reward_function(action, done)
         self.prev_action = action
@@ -262,13 +270,6 @@ class Turtlebot_Lidar_Env:
         self.teleporter.publish(cmd_pose)
         time.sleep(0.3)  # wait (in real time) before and after jumping to avoid segfaults
 
-    def crash_callback(self, data):
-        global is_crashed
-        if data.twist.twist.angular.z:
-            is_crashed = True
-        else:
-            is_crashed = False
-
     def on_shutdown(self):
         # rospy.loginfo("[%s] Shutting down." %(self.node_name))
         rospy.loginfo("Shutting down....")
@@ -291,7 +292,7 @@ class Turtlebot_Lidar_Env:
         vel_cmd.angular.z = -action[1]
         self.vel_pub.publish(vel_cmd)
 
-        time.sleep(STEP_TIME)
+        time.sleep(Config.STEP_TIME)
 
         # read laser data
         data = None
@@ -301,8 +302,15 @@ class Turtlebot_Lidar_Env:
             except:
                 pass
 
-        state, _ = self.discretize_observation(data, DISCRETIZE_RANGE)
+        state, _ = self.discretize_observation(data, Config.DISCRETIZE_RANGE)
 
         return state
 
 
+class Config:
+    DISCRETIZE_RANGE = 6
+    MAX_RANGE = 5  # max valid range is MAX_RANGE -1
+    STEP_TIME = 0.14  # waits 0.2 sec after the action
+    Q_ALPHA = 0.2
+    Q_GAMMA = 0.8
+    Q_EPSILON = 0.1
