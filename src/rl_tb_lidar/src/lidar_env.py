@@ -26,22 +26,25 @@ class Turtlebot_Lidar_Env:
         self.reset_stage = rospy.ServiceProxy('reset_positions', EmptySrv)
         self.teleporter = rospy.Publisher('/cmd_pose', Pose, queue_size=10)
         self.crash_tracker = rospy.Subscriber('/odom', Odometry, self.crash_callback)
-        self.state_space = range(MAX_RANGE ** (DISCRETIZE_RANGE))
-        self.nS = len(self.state_space)
+        
         self.reward_range = (-np.inf, np.inf)
         self.state_aggregation = "MIN"
+
+	self.filename = "map1_lidar_data/" + map + "_sample"
+	self.filecounter = 0
 
         self.map = map
         self.prev_action = np.zeros(2)
         self.nA = nA
         self.action_space = list(np.linspace(0, self.nA, 1))
-        linear_velocity_list = [0.4, 0.2]
-        angular_velocity_list = [np.pi/6, np.pi/12, 0., -np.pi/12, -np.pi/6]
+        self.linear_velocity_list = [0.4, 0.2]
+        self.angular_velocity_list = [np.pi/6, np.pi/12, 0., -np.pi/12, -np.pi/6]
         if self.nA == 7:
-            self.action_table = linear_velocity_list + angular_velocity_list
+            self.action_table = self.linear_velocity_list + self.angular_velocity_list
         elif self.nA == 10:
-            self.action_table = [np.array([v, w]) for v in linear_velocity_list for w in angular_velocity_list]
-
+            self.action_table = [np.array([v, w]) for v in self.linear_velocity_list for w in self.angular_velocity_list]
+	self.state_space = range(len(self.angular_velocity_list)*len(self.linear_velocity_list)*MAX_RANGE ** (DISCRETIZE_RANGE))
+        self.nS = len(self.state_space)
         # self._seed()
 
     def reward_function(self, action, done):
@@ -62,13 +65,12 @@ class Turtlebot_Lidar_Env:
     def action2(self, action_idx):
         action = self.action_table[action_idx]
         return action
-
+	
     def discretize_observation(self, data, new_ranges):
         discrete_state = 0
         min_range = 0.3
         done = False
-
-        if self.state_aggregation == "MIN":
+	if self.state_aggregation == "MIN":
             mod = len(data.ranges) / new_ranges
             for i in range(new_ranges):
 
@@ -90,13 +92,12 @@ class Turtlebot_Lidar_Env:
                     discrete_state = discrete_state
                 else:
                     discrete_state = discrete_state + int(aggregator)
-
+	    
             #if min_range > min(data.ranges):
                 #done = True
             if is_crashed:
                 done = True
                 #self.teleport_random()
-
             return discrete_state, done
 
 
@@ -113,8 +114,21 @@ class Turtlebot_Lidar_Env:
                     discrete_state = discrete_state  + int (data.ranges[i])
             if (min_range > data.ranges[i] > 0):
                 done = True
+	
         return discrete_state, done
-
+    def discretize_state(self, state):
+	data, v, w = state
+	discrete_observation, done = self.discretize_observation(data, DISCRETIZE_RANGE)
+	v_list = self.linear_velocity_list
+	w_list = self.angular_velocity_list
+	try:
+	    v_idx = v_list.index(v)
+	except:
+	    v_idx = 0
+	w_idx = w_list.index(w)
+	discrete_state = discrete_observation + v_idx*(MAX_RANGE**DISCRETIZE_RANGE)
+	discrete_state = discrete_state + w_idx*(len(v_list)*MAX_RANGE**DISCRETIZE_RANGE)
+	return discrete_state, done
 
     def reset_env(self):
         #rospy.wait_for_service('reset_positions')
@@ -131,10 +145,13 @@ class Turtlebot_Lidar_Env:
         while data is None:
             try:
                 data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+		if saveLIDARdata:		
+			np.save("map1_lidar_data/"+self.filename)
             except:
                 pass
 
         state, _ = self.discretize_observation(data, DISCRETIZE_RANGE)
+	#state, _ = self.discretize_state(data, DISCRETIZE_RANGE)
 
         return state
 
@@ -155,15 +172,20 @@ class Turtlebot_Lidar_Env:
         while data is None:
             try:
                 data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+		#np.save(self.filename+str(self.filecounter), np.asarray(data.ranges, dtype=np.float16))
+	        #self.filecounter += 1
             except:
                 pass
-
-        state, done = self.discretize_observation(data, DISCRETIZE_RANGE)
+	    
+        #state, done = self.discretize_observation(data, DISCRETIZE_RANGE)
+	state = (data, action[0], action[1])
+	self.curr_state = np.append(np.asarray(data.ranges), action)
+	discrete_state, done = self.discretize_state(state)
 
         reward = self.reward_function(action, done)
         self.prev_action = action
 
-        return state, reward, done, {}
+        return discrete_state, reward, done, {}
 
     def teleport_random(self):
         """
