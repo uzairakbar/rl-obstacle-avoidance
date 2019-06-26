@@ -61,6 +61,8 @@ class Turtlebot_Lidar_Env:
 
     def crash_callback(self, data):
         global is_crashed
+        # Add the line below to read current velocity value.
+        # print data.twist.twist.linear.x
         if data.twist.twist.angular.z:
             is_crashed = True
         else:
