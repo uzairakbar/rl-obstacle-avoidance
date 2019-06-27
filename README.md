@@ -24,3 +24,8 @@ Instructions to launch real Turtlebot:
     * From your remote computer terminal, write `rosrun rplidar_ros rplidarNodeClient` or `rostopic echo /scan` to view raw scan result.
     * For the details of the `rplidar` package check [this](http://wiki.ros.org/rplidar).
 6. To save the published result of the `/scan` topic, open a new terminal and go to the folder that you want to save the file. Then, write `rostopic echo /scan >>test.txt`.
+
+7. To launch real turtlebot, connect the turtlebot with ssh.
+    *  source the catkin_ws `source catkin_ws/devel/setup.bash` 
+    * `roslaunch rl_tb_lidar real_turtlebot.launch`  
+    * Open another terminal and connet with ssg, go to the src folder to run the script `python turtlebot_run.py`  
