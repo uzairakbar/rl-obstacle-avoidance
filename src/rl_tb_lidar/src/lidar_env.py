@@ -28,7 +28,7 @@ class Turtlebot_Lidar_Env:
         # self.teleporter = rospy.Publisher('/cmd_pose', Pose, queue_size=10)
         # TODO change this part to track /bumper topic in order to understand the crash
         # Change also the callback function such that if the turtlebot hit an obstacle it moves back e.g. 0.5m and continue from that state.
-        self.crash_tracker = rospy.Subscriber('/odom', Odometry, self.crash_callback)
+        #self.crash_tracker = rospy.Subscriber('/odom', Odometry, self.crash_callback)
 
         self.bumber_sub = rospy.Subscriber('mobile_base/events/bumper', BumperEvent, self.process_bump)
         self.state_space = range(Config.MAX_RANGE ** (Config.DISCRETIZE_RANGE))
@@ -51,11 +51,11 @@ class Turtlebot_Lidar_Env:
 
     def process_bump(self, data):
         print ("Bump")
-        global bump#is_crashed
+        global is_crashed
         if (data.state == BumperEvent.PRESSED):
-            bump = True
+            is_crashed = True
         else:
-            bump = False
+            is_crashed = False
         rospy.loginfo("Bumper Event")
         rospy.loginfo(data.bumper)
 
@@ -92,7 +92,9 @@ class Turtlebot_Lidar_Env:
         discrete_state = 0
         min_range = 0.3
         done = False
-
+        a = data.ranges[0:60]
+        b = data.ranges[300:360]
+        data.ranges = np.concatenate((b, a), axis=None)
         if self.state_aggregation == "MIN":
             mod = len(data.ranges) / new_ranges
             for i in range(new_ranges):
@@ -139,6 +141,23 @@ class Turtlebot_Lidar_Env:
                 done = True
         return discrete_state, done
 
+
+    def discretize_state(self, state):
+        #data, v, w = state
+        data = state
+        discrete_observation, done = self.discretize_observation(data, Config.DISCRETIZE_RANGE)
+        v_list = self.linear_velocity_list
+        w_list = self.angular_velocity_list
+        #try:
+            #v_idx = v_list.index(v)
+        #except:
+            #v_idx = 0
+        #w_idx = w_list.index(w)
+        #discrete_state = discrete_observation + v_idx*(MAX_RANGE**DISCRETIZE_RANGE)
+        #discrete_state = discrete_state + w_idx*(len(v_list)*MAX_RANGE**DISCRETIZE_RANGE)
+        discrete_state = discrete_observation
+        return discrete_state, done
+
     def reset_env(self):
         # rospy.wait_for_service('reset_positions')
         try:
@@ -178,15 +197,20 @@ class Turtlebot_Lidar_Env:
         while data is None:
             try:
                 data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+                # np.save(self.filename+str(self.filecounter), np.asarray(data.ranges, dtype=np.float16))
+                # self.filecounter += 1
             except:
                 pass
 
-        state, done = self.discretize_observation(data, Config.DISCRETIZE_RANGE)
+        # state, done = self.discretize_observation(data, DISCRETIZE_RANGE)
+        state = data
+        self.curr_state = np.append(np.asarray(data.ranges), action)
+        discrete_state, done = self.discretize_state(state)
 
         reward = self.reward_function(action, done)
         self.prev_action = action
 
-        return state, reward, done, {}
+        return discrete_state, reward, done, {}
 
     def teleport_random(self):
         """
@@ -313,6 +337,6 @@ class Config:
     DISCRETIZE_RANGE = 6
     MAX_RANGE = 5  # max valid range is MAX_RANGE -1
     STEP_TIME = 0.14  # waits 0.2 sec after the action
-    Q_ALPHA = 0.2
-    Q_GAMMA = 0.8
+    Q_ALPHA = 0.01
+    Q_GAMMA = 0.99
     Q_EPSILON = 0.1

@@ -24,7 +24,7 @@ def handle_collision(env, agent, base_filename, episodeRewardLog, last_action):
 def run():
     rospy.init_node('rl_agent_tb')
     env = en.Turtlebot_Lidar_Env()
-    base_filename = 'Qlearning'
+    base_filename = 'Qlearning1'
     # Save the last Q-table.
     rospy.on_shutdown(env.on_shutdown)
 
@@ -62,7 +62,7 @@ def run():
         # Execute the action and get feedback
         nextState, reward, done, info = env.step(action)
         cumulated_reward += reward
-        print "B"
+        #print "B"
         if highest_reward < cumulated_reward:
             highest_reward = cumulated_reward
 
