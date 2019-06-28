@@ -1,0 +1,199 @@
+\documentclass{article}
+% \usepackage[utf8]{inputenc}
+\usepackage{titling}
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+% Ganntchart
+\usepackage{pgfgantt}
+\usepackage{physics}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}} 
+
+
+\title{Applied Reinforcement Learning\\
+        \vspace{-0.10cm}
+        {\large SS 2019}\\
+        \vspace{0.0cm}
+        {Project Proposal --- Obstacle Avoidance}}
+\author{
+  \small Akbar, Uzair\\
+  \small \texttt{3697290}
+  \and
+  \small G\"undogan Alperen\\
+  \small \texttt{3694565}
+  \and
+  \small Ellouze, Rachid \\
+  \small \texttt{3671114}
+}
+
+\date{May 16, 2019}
+
+
+\begin{document}
+\begin{titlingpage}
+    \maketitle
+    \begin{abstract}
+        This report presents our project proposal for the TUM Applied Reinforcement Learning class (summer semester 2019). Our proposed application is that of obstacle avoidance, which is a fundamental requirement for autonomous robots which operate in, and interact with, the real world. The agent which implies RL algorithms does not require a predefined model of the problem and can consider the whole problem during the learning process while other methods e.g. supervised learning only focuses on sub-problems. Also, conventional path planners for obstacle avoidance require tuning a number of parameters and do not have the ability to scale well with large datasets and continuous use. Therefore, we propose the use of Q-Learning with Linear Value Function Approximation (LVFA) for obstacle avoidance, where distance information is provided by LIDAR sensor. % We will first train the agent in a simulation environment, and to bridge the reality-gap, we shall use simulation $\rightarrow$ reality `curriculum learning.'
+    \end{abstract}
+    \tableofcontents
+\end{titlingpage}
+% \section*{Abstract}
+
+
+\section{Introduction}
+\subsection{Goals}
+Our goals can be defined as follows;
+\begin{itemize}
+\item The turtlebot covers max ground in an episode.
+\item The turtlebot avoids collision.
+\end{itemize}
+
+\subsection{Problem Definition}
+The problem can be classified as a decision making process where the turtlebot is interacting with environment with a LIDAR sensor. At each time step $t \in [0, T]$, the turtlebot chooses an action $a_t \in \mathcal{A}$ based on the current state $s_t$, receives a feedback $r_t$ from the reward function and observe the next state $s_t$. The goal is to maximize the additive reward $R_t = \sum_{\tau=t}^{T}\gamma^{\tau-t}r_{\tau}$, where $\tau$ is the discount factor. The Q-value can be defined as $ Q^{\pi}(s_t, a_t)= \mathbb{E}[R_t\,\vert\,s_t,a_t,\pi]$, where $a_t$ is selected $\epsilon$ - greedly in order to tune the trade-off between exploration and exploitation;
+
+\begin{equation*}
+  \pi(a_t\,\vert\,s_t) =
+  \begin{cases}
+    1 - \epsilon & \text{if }  a_t^* = \underset{a_t \in  \mathcal{A}}{\argmax}\: Q(s_t, a_t) \\
+    \epsilon \mathbin{/} (\abs{\mathcal{A}}-1) & \text{otherwise}
+  \end{cases}
+\end{equation*}
+
+Then, the following algorithm Q-value update is applied;
+\[
+Q(s_t,a_t)\;\leftarrow\;Q(s_t,a_t) + \alpha [ r_{t+1} + \gamma \max_{a_{t+1}}
+Q(s_{t+1},a_{t+1}) - Q(s_t,a_t) ]
+\]
+
+\section{Solution Approach}
+Based on our preliminary literature review, we have outlined the following approach to solve the given problem using a turtlebot. However these details may be subject to change if required later in the project.
+
+\subsection{Environment Setup}
+%\subsubsection{Sensor Model}
+We will use LIDAR which is divided into $N$ beams over the coverage of $[\theta_{min}, \theta_{max}]$. The appropriate parameters will be decided through the experiments. Each laser returns $x_n$ if it detects an obstacle which denotes the distance of the obstacle, otherwise $d_{max}$. The measurement then is stored into the vector as $d^T = (x_1,...,x_N)$ and is exploited as a state representation.
+\subsubsection{Sensor Model \& State Space Definition}
+We shall consider one of two definitions for the state-space $\mathcal{S}$.
+\begin{enumerate}
+    \item $\mathcal{S}_1 := \big\{ s\,\big\vert \, s= [\,d^T\:\vert\,v\,\vert\,w\,]^T \big\}$, where $d$ is the depth map observed from the on-board kinect. To leverage temporal information, $v$ and $w$ are linear and angular velocities of the robot respectively and shall be discretized as
+    \begin{equation*}
+      v\in V := \big\{ 0.4, 0.2\,\si{m.s^{-1}}\big\}, \;w\in W:=\big\{ \frac{\pi}{6}, \frac{\pi}{12}, 0, -\frac{\pi}{12}, -\frac{\pi}{6}\,\si{rad.s^{-1}}\big\}.
+    \end{equation*}
+    \item Later, in order to cater for moving obstacles, we might consider incorporating optical-flow information $o$, so that now the new state-space will be $\mathcal{S}_2 := \big\{ s\,\big\vert \, s = [\,o^T\:\vert\,d^T\:\vert\,v\,\vert\,w\,]^T \big\}$.
+\end{enumerate}
+
+\subsubsection{Action Space Definition}
+The control space $\mathcal{A}$ shall determine the permissible linear and angular velocities for the turtlebot. We aim to discretize the action space in one of two ways.
+\begin{enumerate}
+    \item $\mathcal{A}_1 := \Big\{ a \;\Big\vert\; a = \big(v', w'\big), \;v'\in V, \;w'\in W \Big\}$, where $v'$ and $w'$ are next state linear and angular velocities of the robot respectively. Hence, $\vert \mathcal{A}_1 \vert = 10$.
+    \item A much simpler/smaller action space where $v'$ and $w'$ are ``decoupled,'' e.g. $\mathcal{A}_2 := \big\{ a\; \big\vert \;a \in \mathcal{A}_1\,,\: v' = v \;\lor\; w' = w \big\}$, with $\vert \mathcal{A}_2 \vert = 7$.
+\end{enumerate}
+Due to a smaller action space, a good policy for $\mathcal{A}_2$ should be easier to learn than $\mathcal{A}_1$, however it might be biased given the additional constraints.
+
+\subsubsection{The Reward Function}
+Our task for the turtlebot is for it to go as fast as possible without any collisions. For this, we can employ a simple, action agnostic stage-wise reward function
+\begin{equation*}
+  r(s) =
+  \begin{cases}
+    v \cdot \cos(w) & \text{if episode running,} \\
+    c & \text{if collision.}
+  \end{cases}
+\end{equation*}
+The cosine term penalizes meaningless rotation and $c$ is a large negative reward. %The reward function design can be further improved to guide the robot to avoid from obstacles e.g. higher reward if the robot is further from the obstacles. % as mentioned in the paper [ref]
+
+\subsection{The Reinforcement Learning Agent}
+We aim to use Q-Learning with Linear Value Function Approximation (LVFA) as our RL agent. Although non-linear, neural-network based value function approximations have been popular recently in RL literature, we shall be sticking to LVFA as it has theoretical lower bounds on the performance and hence the results are reproducible. This is generally not true for non-LVFA.
+
+The overall update rule for the value function $Q(s, a) \approx \theta^T(a)\phi(s)$ is% [ref]
+\begin{equation*}
+\theta_{i+1}(a) = \theta_i(a) + \alpha\Big( r(s) + \gamma \max_{a'} \theta_{i}^{T}(a')\phi(s') - \theta_{i}^{T}(a) \phi(s) \Big) \phi(s)
+\end{equation*}
+Where $\theta(a)$, $\alpha$ and $\gamma$ are the LVFA weights for action $a$, learning-rate and discount-factor respectively.
+
+%The rationale for choosing SARSA specifically is 2 fold.
+%
+%\begin{enumerate}
+%    \item We want to use a model-free approach. Therefore, the obvious candidates were Q-learning and SARSA.
+%    \item We wanted to choose a method which is provably convergent (within some bound of the optimal) with LVFA. Hence, Q-learning does not qualify.
+%\end{enumerate}
+\subsection{Training Environment \& Reality-gap}
+We shall be training the RL agent in a simulation environment using Gazebo or more simplified simulator Stage would be enough for our task. The simulation bias, which is not expected to have crucial impact in our case since we use LIDAR sensor, can be eliminated by introducing additional noise.
+
+%An episode shall end on either a collision, or after $N$ number of steps. For real-world training purposes, collisions can be detected using the turtlebot bumper values. However, before training the RL agent, we would need to train the VAE for feature extraction. For this we need to collect a large amount of training data in the real world. The intuition is that due to the nature of depth-maps (and unlike RGB images), their distribution should be similar enough in both a simulation and the real world that heavy data augmentation can achieve good enough generalization \cite{Xie2017TowardsMV, Singla2018MemorybasedDR}. Should that not be the case, we shall use `curriculum-learning,' where we retrain the RL agent in the real world in an attempt to generalize better.
+%TODO mention about the other simulation environment.
+\section{Project Organization}
+\subsection{Tentative Timeline}
+The Gannt chart represents the timeline of the project.
+%    x unit = 0.5cm,
+%    y unit title=1.0cm,
+%    y unit chart=0.5cm,
+\begin{figure}
+%\begin{center}
+%\begin{preview}
+
+\noindent\resizebox{\textwidth}{!}{
+%\begin{tikzpicture}[x=.5cm, y=1cm]
+    \begin{ganttchart}[
+	vgrid={*{5}{draw=none},dotted},  % vgrid, 
+    hgrid,
+    bar height=.1,
+    x unit = 0.5cm,
+    y unit title=1.0cm,
+    y unit chart=0.70cm,
+    milestone/.append style={fill=green},
+    bar/.append style={fill=red},
+    time slot format=isodate,
+    ]{2019-05-06}{2019-07-18}  % <---
+      \gantttitlecalendar{year, month=name}\\
+       \ganttgroup{WP-1}{2019-05-06}{2019-05-18} \\
+       \ganttgroup{WP-2}{2019-05-18}{2019-05-25}\\
+       \ganttbar{T2.1}{2019-05-18}{2019-05-22} \\
+       \ganttbar{T2.2}{2019-05-22}{2019-05-25} \\
+       \ganttmilestone{MS-1}{2019-05-25}\\
+       \ganttgroup{WP-3}{2019-05-25}{2019-06-05}\\
+       \ganttbar{T3.1}{2019-05-25}{2019-06-01} \\ 
+       \ganttbar{T3.2}{2019-05-25}{2019-06-01} \\
+       \ganttbar{T3.3}{2019-06-01}{2019-06-05} \\
+        \ganttmilestone{MS-2}{2019-06-05} \\
+       \ganttgroup{WP-4}{2019-06-05}{2019-07-05}  \\
+        \ganttbar{T4.1}{2019-06-05}{2019-06-15} \\
+         \ganttbar{T4.2}{2019-06-15}{2019-06-25} \\
+        \ganttbar{T4.3}{2019-06-25}{2019-07-05} \\   
+        \ganttmilestone{MS-3}{2019-07-05}  \\
+       \ganttgroup{WP-5}{2019-07-05}{2019-07-10}  \\
+       %\ganttgroup{WP-6}{2019-07-10}{2019-07-18}  \\
+    \end{ganttchart}
+}
+%\end{center}
+%\caption{\label{fig:gannt}Time plan}
+\end{figure}
+%\end{preview}
+%%
+
+\subsection{Tentative Task Division}
+\begin{itemize}
+\item Work Package 1: Required tutorials.(Uzair, Alperen, Rachid)
+\item Work Package 2: 
+\begin{enumerate}
+\item Setup environment and simulation framework. (Uzair, Alperen, Rachid)
+\item Implement basic functionalities.(\textit{Milestone 1}).
+\end{enumerate}
+\item Work Package 3: Apply a draft algorithm in the simulation environment.
+\begin{enumerate}
+\item Feature extraction design i.e. $N$, $[\theta_{min}, \theta_{max}]$ . (Uzair)
+\item Implement RL algorithm. (Alperen)
+\item Tests with the simulation, tune the parameters to obtain a working agent.(Rachid) (\textit{Milestone 2}) 
+\end{enumerate}
+\item Work Package 4: Test with the real agent and improve the results.
+\begin{enumerate}
+\item Apply different approaches on simulation. (Uzair)
+\item Transfer the simulated policy to the real agent and test. (Alperen)
+\item Decide and validate the final approach. (Rachid) \textit{Milestone 3}) 
+\end{enumerate}
+\item Work Package 5: Presentation and final report. (Uzair, Alperen, Rachid)
+\end{itemize}
+
+\medskip
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+
+\end{document}
