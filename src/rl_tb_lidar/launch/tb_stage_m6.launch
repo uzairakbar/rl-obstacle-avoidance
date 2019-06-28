@@ -1,0 +1,6 @@
+<launch>
+    <include file="$(find rl_tb_lidar)/turtlebot_stage/launch/turtlebot_in_stage.launch">
+    <arg name="map_file" value=" $(find rl_tb_lidar)/turtlebot_stage/maps/map6/map_6.yaml" />
+    <arg name="world_file" value=" $(find rl_tb_lidar)/turtlebot_stage/maps/map6/map_6.world" /> 
+    </include>
+</launch>
