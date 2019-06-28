@@ -1,0 +1,188 @@
+\documentclass{article}
+% \usepackage[utf8]{inputenc}
+\usepackage{titling}
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\usepackage[margin=1in]{geometry}
+\usepackage{pgfgantt}
+\title{Applied Reinforcement Learning\\
+        \vspace{-0.25cm}
+        {\large SS 2019}\\
+        \vspace{0.25cm}
+        {Project Proposal --- Obstacle Avoidance}}
+
+\author{
+  \small Akbar, Uzair\\
+  \small \texttt{3697290}
+  \and
+  \small G\"undogan, Alperen\\
+  \small \texttt{3694565}
+  \and
+  \small Ellouze, Rachid \\
+  \small \texttt{3671114}
+}
+
+\date{May 16, 2019}
+
+
+
+\begin{document}
+\begin{titlingpage}
+    \maketitle
+    \begin{abstract}
+        This report presents our project proposal for the TUM Applied Reinforcement Learning class (summer semester 2019). Our proposed application is that of obstacle avoidance, which is a fundamental requirement for autonomous robots which operate in, and interact with, the real world. Conventional path planners for obstacle avoidance require tuning a number of parameters and do not have the ability to scale well with large datasets and continuous use. Therefore, we propose the use of Q-learning and/or SARSA on $\epsilon$-greedy policy with Linear Value Function Approximation (LVFA) for obstacle avoidance, where LIDAR sensor information is provided. We will first train the agent in a simulation environment, and to bridge the reality-gap we shall consider using simulation $\rightarrow$ reality `curriculum learning' and additive LIDAR simulation noise if necessary.
+    \end{abstract}
+    \tableofcontents
+\end{titlingpage}
+% \section*{Abstract}
+
+
+\section{Introduction \& Problem Definition}
+In order for mobile robots to navigate the real world they need to be able avoid obstacles along their trajectories. Obstacle avoidance is therefore a very established problem in robotics. Standard approaches involve a two step procedure --- first use sensor data with methods like Simultaneous Localization and Mapping (SLAM) to infer traversable spaces, and secondly follow it up with path-planning algorithms, such as RRT*, to traverse those spaces while avoiding obstacles.
+
+However, with this 2-step, computation heavy approach, it can be difficult to do path-planning on-the-fly with SLAM. Additionally, it is challenging for these approaches to automatically adapt with non-stationary environments. Additionally, we would like to explore an approach where the solution scales well with continuous use.
+
+Because of these reasons, we propose the use of Reinforcement Learning (RL) based approach to tackle the obstacle avoidance problem. In the following report we formalize the problem in the context of turtlebot2 with a LIDAR sensor. Although the proposed approach is specific to the settings described in this report, it is only a proof-of-concept can be extended to any other setting, including dynamic environments, by e.g., incorporating optical-flow information in addition to LIDAR.
+
+\subsection{Goals}
+Our goals can be explicitly defined as follows:
+\begin{itemize}
+\item The turtlebot covers maximum ground in an episode.
+\item The turtlebot avoids collisions.
+\end{itemize}
+\subsection{Problem Definition}
+The problem of obstacle avoidance can be formulated as a {\it Markov Decision Process} (MDP) where the turtlebot is interacting with environment with a LIDAR sensor and its actuators. At each time step $t \in [0, T]$, the turtlebot chooses an action $a_t \in \mathcal{A}$ based on the current state $s_t$, receives a feedback from the environment as a reward signal $r_t$ and observe the next state $s_t$. The goal is to maximize the cumulative reward $R_t = \sum_{t=0}^{T}\gamma^{t}r_{t}$, where $\gamma$ is the {\it discount factor}. In the following section we shall define each one of these quantities in the context of our goals in section 1.1.
+
+\section{Solution Approach}
+
+\subsection{Environment Setup}
+\subsubsection{Sensors}
+We will use LIDAR which is divided into $N$ beams over the coverage of $[\theta_{min}, \theta_{max}]$. The appropriate parameters will be decided through the experiments. Each laser returns $x_n$ if it detects an obstacle which denotes the (discretized) distance to that obstacle, otherwise $d_{max}$. These measurements are stored into a `depth' vector as $d^T = (x_1,...,x_N)$ and is exploited in our state representation.
+
+\subsubsection{State Space Definition}
+We define the state-space as $\mathcal{S} := \big\{ s\,\big\vert \, s= [\,d^T\:,\,v\,,\,w\,]^T \big\}$, where $d$ is the depth vector observed from the on-board LIDAR sensor. To leverage temporal information, $v$ and $w$ are linear and angular velocities of the robot respectively and shall be discretized as
+    \begin{equation*}
+      v\in V := \big\{ 0.4, 0.2\,\si{m.s^{-1}}\big\}, \;\;\;w\in W:=\big\{ \frac{\pi}{6}, \frac{\pi}{12}, 0, -\frac{\pi}{12}, -\frac{\pi}{6}\,\si{rad.s^{-1}}\big\}.
+    \end{equation*}
+% We shall consider one of two definitions for the state-space $\mathcal{S}$.
+% \begin{enumerate}
+%     \item $\mathcal{S}_1 := \big\{ s\,\big\vert \, s= [\,d^T\:,\,v\,,\,w\,]^T \big\}$, where $d$ is the depth map observed from the on-board kinect. To leverage temporal information, $v$ and $w$ are linear and angular velocities of the robot respectively and shall be discretized as
+%     \begin{equation*}
+%       v\in V := \big\{ 0.4, 0.2\,\si{m.s^{-1}}\big\}, \;w\in W:=\big\{ \frac{\pi}{6}, \frac{\pi}{12}, 0, \frac{\pi}{12}, \frac{\pi}{6}\,\si{rad.s^{-1}}\big\}.
+%     \end{equation*}
+%     \item Later, in order to cater for moving obstacles, we might consider incorporating optical-flow information $o$, so that now the new state-space will be $\mathcal{S}_2 := \big\{ s\,\big\vert \, s = [\,o^T\:\vert\,d^T\:\vert\,v\,\vert\,w\,]^T \big\}$.
+% \end{enumerate}
+
+\subsubsection{Action Space Definition}
+The control space $\mathcal{A}$ shall determine the permissible linear and angular velocities for the turtlebot. We aim to discretize the action space in one of two ways.
+\begin{enumerate}
+    \item $\mathcal{A}_1 := \Big\{ a \;\Big\vert\; a = \big(v', w'\big), \;v'\in V, \;w'\in W \Big\}$, where $v'$ and $w'$ are next state linear and angular velocities of the robot respectively. Hence, $\vert \mathcal{A}_1 \vert = 10$.
+    \item A much simpler/smaller action space where $v'$ and $w'$ are ``decoupled,'' e.g. $\mathcal{A}_2 := \big\{ a\; \big\vert \;a \in \mathcal{A}_1\,,\: v' = v \;\lor\; w' = w \big\}$, with $\vert \mathcal{A}_2 \vert = 7$.
+\end{enumerate}
+Due to a smaller action space, a good policy for $\mathcal{A}_2$ should be easier to learn than $\mathcal{A}_1$, however it might be biased given the additional constraints.
+
+\subsubsection{The Reward Function}
+Our task for the turtlebot is for it to go as fast as possible without any collisions. For this, we can employ a simple, action agnostic stage-wise reward function
+\begin{equation*}
+  r(s) =
+  \begin{cases}
+    v \cdot \cos(w) & \text{if episode running,} \\
+    c & \text{if collision.}
+  \end{cases}
+\end{equation*}
+The cosine term penalizes meaningless rotation and $c$ is a large negative reward.
+
+\subsection{The Reinforcement Learning Agent}
+We aim to explore a number of RL approaches for the problem that is formalized in the preceding sections. The approaches that we shall begin with are
+\begin{enumerate}
+    \item {\bf Q-Learning.} We want to use a model-free approach which could be implemented quickly. Therefore, the obvious candidate is simple {\it Q-learning}, which shall be our first approach and a baseline.
+    \item {\bf SARSA with LVFA.} We also wanted to choose a method which is provably convergent (within some bound of the optimal) with LVFA. Hence, Q-learning will not suffice. Therefore we also intend to explore {\it SARSA} for an {\it $\epsilon$-greedy policy.}
+    \item {\bf TD with LVFA.} For completeness purposes and for a good comparative study of RL algorithms, we shall also consider the implementation of {\it Temporal Difference} (TD) based {\it Policy Iteration} (PI) with LVFA should the time allow.
+\end{enumerate}
+Note that both approaches shall incorporate {\it eligibility traces}, since it would be difficult to train otherwise.
+
+Although non-linear, {\it neural-network} based value function approximations have been popular recently in RL literature, we shall be using LVFA not only because it is a requirement of this class, but has theoretical lower bounds on the performance (with SARSA) and hence the results are reproducible. This is generally not true for non-LVFA approaches.
+
+% The overall update rule for the value function $Q(s, a) \approx \theta^T(a)\phi(s)$ is [ref]
+% \begin{equation*}
+% \theta_{i+1}(a) = \theta_i(a) + \alpha\Big( r(s) + \gamam \theta_{i}^{T}(a')\phi(s') - \theta_{i}^{T}(a) \phi(s) \Big) \phi(s)
+% \end{equation*}
+% Where $\theta(a)$, $\alpha$ and $\gamma$ are the LVFA weights for action $a$, learning-rate and discount-factor respectively.
+
+\subsection{Feature Extraction \& State Representations}
+Given the definition of our state-space in sections 2.1 and 2.2.1, our initial approach shall not include any further state-space dimensionality reduction, rather we shall begin with a sufficiently small `depth' vector $d$ so that our state space is small enough by design. Should we later need to increase the size of the state-space for some reason, adequate state representation techniques shall be explored accordingly.
+
+\subsection{Training Environment \& Reality-gap}
+We shall be training the RL agent in a simulation environment using either Gazebo, Stage or Box2D. An episode shall end on either a collision, or after $N$ number of steps. For real-world training purposes, collisions can be detected using the turtlebot bumper values. It is expected that due to the nature of depth-vectors $d$ obtained from LIDAR, their distribution should be similar enough in both a simulation and the real world that direct translation of the learned LVFA weights should still work. However, if that is not the case, we shall explore the following two solutions:
+\begin{enumerate}
+    \item {\bf Additive Simulation Noise.} We might consider adding noise to the sensor values (specifically depth vector $d$) in order to generalize better to the real work. However, we might need to explore a variety of different noise distributions should a simple Gaussian case fail to solve the problem.
+    \item {\bf Curriculum Learning.} If the first approach fail to generalize well, we might consider re-training the turtlebot in the real world environment with the simulation weights as a good initialization for LVFA.
+\end{enumerate}
+
+
+\section{Project Organization}
+Figure 1 represents the time-line for the project. A list of tentative task distribution is also given below.
+\begin{figure}
+%\begin{center}
+%\begin{preview}
+\noindent\resizebox{\textwidth}{!}{
+%\begin{tikzpicture}[x=.5cm, y=1cm]
+    \begin{ganttchart}[
+	vgrid={*{5}{draw=none},dotted},  % vgrid,
+    hgrid,
+    bar height=.1,
+    x unit = 0.5cm,
+    y unit title=1.0cm,
+    y unit chart=0.70cm,
+    milestone/.append style={fill=green},
+    bar/.append style={fill=red},
+    time slot format=isodate,
+    ]{2019-05-06}{2019-07-18}  % <---
+      \gantttitlecalendar{year, month=name}\\
+       \ganttgroup{WP-1}{2019-05-06}{2019-05-18} \\
+       \ganttgroup{WP-2}{2019-05-18}{2019-05-25}\\
+       \ganttbar{T2.1}{2019-05-18}{2019-05-22} \\
+       \ganttbar{T2.2}{2019-05-22}{2019-05-25} \\
+       \ganttmilestone{MS-1}{2019-05-25}\\
+       \ganttgroup{WP-3}{2019-05-25}{2019-06-05}\\
+       \ganttbar{T3.1}{2019-05-25}{2019-06-01} \\
+       \ganttbar{T3.2}{2019-05-25}{2019-06-01} \\
+       \ganttbar{T3.3}{2019-06-01}{2019-06-05} \\
+        \ganttmilestone{MS-2}{2019-06-05} \\
+       \ganttgroup{WP-4}{2019-06-05}{2019-07-05}  \\
+        \ganttbar{T4.1}{2019-06-05}{2019-06-15} \\
+         \ganttbar{T4.2}{2019-06-15}{2019-06-25} \\
+        \ganttbar{T4.3}{2019-06-25}{2019-07-05} \\
+        \ganttmilestone{MS-3}{2019-07-05}  \\
+       \ganttgroup{WP-5}{2019-07-05}{2019-07-10}  \\
+       %\ganttgroup{WP-6}{2019-07-10}{2019-07-18}  \\
+    \end{ganttchart}
+}
+%\end{center}
+\caption{\label{fig:gannt}Tentative project time-line.}
+\end{figure}
+
+\begin{itemize}
+\item Work Package 1: Required tutorials.(Uzair, Alperen, Rachid)
+\item Work Package 2:
+\begin{enumerate}
+\item Setup environment and simulation framework. (Uzair, Alperen, Rachid)
+\item Implement basic functionalities.(\textit{Milestone 1}).
+\end{enumerate}
+\item Work Package 3: Apply a draft algorithm in the simulation environment.
+\begin{enumerate}
+\item Feature extraction design i.e. $N$, $[\theta_{min}, \theta_{max}]$ . (Uzair)
+\item Implement RL algorithm. (Alperen)
+\item Tests with the simulation, tune the parameters to obtain a working agent.(Rachid) (\textit{Milestone 2})
+\end{enumerate}
+\item Work Package 4: Test with the real agent and improve the results.
+\begin{enumerate}
+\item Apply different approaches on simulation. (Uzair)
+\item Transfer the simulated policy to the real agent and test. (Alperen)
+\item Decide and validate the final approach. (Rachid) \textit{Milestone 3})
+\end{enumerate}
+\item Work Package 5: Presentation and final report. (Uzair, Alperen, Rachid)
+\end{itemize}
+
+
+\end{document}
