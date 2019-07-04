@@ -19,16 +19,7 @@ is_crashed = False
 
 class Turtlebot_Lidar_Env:
     def __init__(self, nA=10):
-        # TODO check how to send a command to move robot.
         self.vel_pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=5)
-        # Change this for gazebo implementation.
-        # rospy.wait_for_service('reset_positions')
-
-        # self.reset_stage = rospy.ServiceProxy('reset_positions', EmptySrv)
-        # self.teleporter = rospy.Publisher('/cmd_pose', Pose, queue_size=10)
-        # TODO change this part to track /bumper topic in order to understand the crash
-        # Change also the callback function such that if the turtlebot hit an obstacle it moves back e.g. 0.5m and continue from that state.
-        #self.crash_tracker = rospy.Subscriber('/odom', Odometry, self.crash_callback)
 
         self.bumber_sub = rospy.Subscriber('mobile_base/events/bumper', BumperEvent, self.process_bump)
         self.state_space = range(Config.MAX_RANGE ** (Config.DISCRETIZE_RANGE))
@@ -36,7 +27,6 @@ class Turtlebot_Lidar_Env:
         self.reward_range = (-np.inf, np.inf)
         self.state_aggregation = "MIN"
 
-        # self.map = map
         self.prev_action = np.zeros(2)
         self.nA = nA
         self.action_space = list(np.linspace(0, self.nA, 1))
@@ -88,6 +78,27 @@ class Turtlebot_Lidar_Env:
         action = self.action_table[action_idx]
         return action
 
+    def approximate_observation(self, beam_number, data):
+        """
+        This method is called when the observed lidar point is inf.
+        The method approximates the given beam_number within the data to get rid of the spoiled observation.
+        :param beam_number: given point the data
+        :param data:        lidar data is used to approximate the data.
+        :return:
+        """
+        # Find the nearest point from the negative and positive angle
+        n_nearest = Config.MAX_RANGE
+        p_nearest = Config.MAX_RANGE
+        inf = float("inf")
+        for i in range(1, 20): #check up to most 20 elements from left and right.
+            if (data[beam_number-i] != inf):
+                n_nearest = data[beam_number - i]
+            if (data[beam_number + i] != inf):
+                p_nearest = data[beam_number + i]
+
+        # Take the average and return
+        return (n_nearest + p_nearest)/2
+
     def discretize_observation(self, data, new_ranges):
         discrete_state = 0
         min_range = 0.3
@@ -100,13 +111,16 @@ class Turtlebot_Lidar_Env:
             for i in range(new_ranges):
 
                 discrete_state = discrete_state * Config.MAX_RANGE
-                aggregator = min(data.ranges[mod * i: mod * (i + 1)])
+                #beam_number_1 = mod * i
+                #beam_number_2 = mod * (i+1)
 
-                if aggregator > 2.5:
-                    aggregator = 4
-                elif aggregator > 1.5:
-                    aggregator = 3
-                elif aggregator > 1:
+                #aggregator = data.ranges[beam_number]
+                #if aggregator == float('Inf'):
+                #    aggregator = self.approximate_observation(beam_number, data.ranges)
+                # NOTE: Actually we do not need to call the approximate_observation function since we pick the lowest
+                # value within the range. If we want to use a concrete beams, then we will need such an approximation.
+                aggregator = min(data.ranges[mod * i: mod * (i + 1)])
+                if aggregator > 1:
                     aggregator = 2
                 elif aggregator > 0.5:
                     aggregator = 1
@@ -146,8 +160,8 @@ class Turtlebot_Lidar_Env:
         #data, v, w = state
         data = state
         discrete_observation, done = self.discretize_observation(data, Config.DISCRETIZE_RANGE)
-        v_list = self.linear_velocity_list
-        w_list = self.angular_velocity_list
+        #v_list = self.linear_velocity_list
+        #w_list = self.angular_velocity_list
         #try:
             #v_idx = v_list.index(v)
         #except:
@@ -172,7 +186,8 @@ class Turtlebot_Lidar_Env:
         data = None
         while data is None:
             try:
-                data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+                #data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+                data = rospy.wait_for_message('/scan_filtered', LaserScan, timeout=5)
             except:
                 pass
 
@@ -196,7 +211,8 @@ class Turtlebot_Lidar_Env:
         data = None
         while data is None:
             try:
-                data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+                #data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+                data = rospy.wait_for_message('/scan_filtered', LaserScan, timeout=5)
                 # np.save(self.filename+str(self.filecounter), np.asarray(data.ranges, dtype=np.float16))
                 # self.filecounter += 1
             except:
@@ -324,7 +340,8 @@ class Turtlebot_Lidar_Env:
         data = None
         while data is None:
             try:
-                data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+                #data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+                data = rospy.wait_for_message('/scan_filtered', LaserScan, timeout=5)
             except:
                 pass
 
@@ -334,9 +351,9 @@ class Turtlebot_Lidar_Env:
 
 
 class Config:
-    DISCRETIZE_RANGE = 6
+    DISCRETIZE_RANGE = 5
     MAX_RANGE = 5  # max valid range is MAX_RANGE -1
-    STEP_TIME = 0.14  # waits 0.2 sec after the action
+    STEP_TIME = 0.50  # waits 0.2 sec after the action
     Q_ALPHA = 0.01
     Q_GAMMA = 0.99
     Q_EPSILON = 0.1

@@ -24,14 +24,14 @@ def handle_collision(env, agent, base_filename, episodeRewardLog, last_action):
 def run():
     rospy.init_node('rl_agent_tb')
     env = en.Turtlebot_Lidar_Env()
-    base_filename = 'Qlearning1'
+    base_filename = 'Qlearning'
     # Save the last Q-table.
     rospy.on_shutdown(env.on_shutdown)
 
     qInit = qlearn.QLearn(actions=range(env.nA), states=env.state_space,
                           alpha=en.Config.Q_ALPHA, gamma=en.Config.Q_GAMMA, epsilon=en.Config.Q_EPSILON)
     try:
-        qInit.loadModel("Qinit_" + base_filename + ".npy")
+        qInit.loadModel(base_filename + ".npy")
     except:
         print "ERROR: Q-table is not found"
         pass
