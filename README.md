@@ -27,5 +27,5 @@ Instructions to launch real Turtlebot:
 
 7. To launch real turtlebot, connect the turtlebot with ssh.
     *  source the catkin_ws `source catkin_ws/devel/setup.bash` 
-    * `roslaunch rl_tb_lidar real_turtlebot.launch`  
+    * `roslaunch rl_tb_lidar real_turtlebot_filtered.launch`  
     * Open another terminal and connet with ssg, go to the src folder to run the script `python turtlebot_run.py`  
