@@ -44,6 +44,7 @@ class Turtlebot_Lidar_Env:
         global is_crashed
         if (data.state == BumperEvent.PRESSED):
             is_crashed = True
+            #.handle_collision()
         else:
             is_crashed = False
         rospy.loginfo("Bumper Event")
@@ -324,6 +325,7 @@ class Turtlebot_Lidar_Env:
 
     def handle_collision(self, last_action):
         # Apply the reverse action to move the bumper back.
+        global is_crashed
         if self.nA == 7:
             action = self.action1(last_action)
         elif self.nA == 10:
@@ -335,7 +337,7 @@ class Turtlebot_Lidar_Env:
         self.vel_pub.publish(vel_cmd)
 
         time.sleep(Config.STEP_TIME)
-
+        is_crashed = False
         # read laser data
         data = None
         while data is None:
@@ -353,7 +355,7 @@ class Turtlebot_Lidar_Env:
 class Config:
     DISCRETIZE_RANGE = 5
     MAX_RANGE = 5  # max valid range is MAX_RANGE -1
-    STEP_TIME = 0.50  # waits 0.2 sec after the action
+    STEP_TIME = 0.07  # waits 0.2 sec after the action
     Q_ALPHA = 0.01
     Q_GAMMA = 0.99
     Q_EPSILON = 0.1
