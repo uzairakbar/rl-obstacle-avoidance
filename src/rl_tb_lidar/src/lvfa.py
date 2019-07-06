@@ -31,6 +31,9 @@ class LVFA:
     def get_Q(self):
         return np.reshape(self.appox_Q,(self.nS, self.nA))
 
+    def chooseAction(self, s):
+        return self.policy(self.get_Q(), s)
+
     def save_model(self,path):
         np.save(path+"-theta", self.appox_Q)
         np.save(path+"-featureMatrix", self.feature_matrix)
