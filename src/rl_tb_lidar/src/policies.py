@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import numpy as np
 
 class Policy:
@@ -22,3 +23,6 @@ class Policy:
         probabilities = np.exp(Q[s, :]) / sum(np.exp(Q[s, :]))
         elements = range(self.nA)
         return np.random.choice(elements, p=probabilities)
+
+    def change_epsilon(self,epsilon):
+        self.epsilon = epsilon
