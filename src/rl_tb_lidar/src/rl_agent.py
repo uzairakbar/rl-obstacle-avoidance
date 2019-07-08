@@ -5,7 +5,7 @@ from  qlearn import QLearn
 from policies import Policy
 
 class Agent():
-    def __init__(self, policy="greedy", lvfa=False, dim=7 ,nA=7, nS=78125, epsilon=0.25, alpha=0.01 ,gamma=0.9, ellgibility_trace = False, Q = None ):
+    def __init__(self, policy="greedy", lvfa=False, dim=7 ,nA=7, nS=78125, epsilon=0.05, alpha=0.01 ,gamma=0.9, ellgibility_trace = True, Q = None ):
 
         self.policy_class = Policy(nA=nA, epsilon=self.epsilon)
         self.change_epsilon = self.policy_class.change_epsilon

@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import numpy as np
 
+
 class LVFA:
     def __init__(self, dim = 7, nA = 7, nS = 78125, alpha = 0.01, gamma = 0.9, policy = None):
         self.dim = dim
@@ -30,7 +31,7 @@ class LVFA:
         self.appox_Q = self.appox_Q - self.alpha * (self.appox_Q.T * self.feature_matrix[:, s1 * a1] - r - self.gamma * self.appox_Q.T * self.feature_matrix[:, s2 * a2]) * self.feature_matrix[:, s1 * a1]
 
     def get_Q(self):
-        return np.reshape(self.appox_Q,(self.nS, self.nA))
+        return np.reshape(self.feature_matrix.T * self.appox_Q,(self.nS, self.nA))
 
     def chooseAction(self, s):
         return self.policy(self.get_Q(), s)

@@ -3,7 +3,8 @@ import numpy as np
 
 class Policy:
     def __init__(self,nA = 7 ,epsilon = 0.25):
-        self.epsilon = epsilon
+        self.min_espsilon = epsilon
+        self.epsilon = 0.9
         self.nA = nA
 
 
@@ -12,6 +13,8 @@ class Policy:
 
 
     def eps_policy(self,Q,s):
+        if self.epsilon >= self.min_espsilon:
+            self.epsilon = self.epsilon * 0.9986
 
         if np.random.rand() < self.epsilon:
             return np.random.randint(self.nA)
@@ -23,6 +26,3 @@ class Policy:
         probabilities = np.exp(Q[s, :]) / sum(np.exp(Q[s, :]))
         elements = range(self.nA)
         return np.random.choice(elements, p=probabilities)
-
-    def change_epsilon(self,epsilon):
-        self.epsilon = epsilon
