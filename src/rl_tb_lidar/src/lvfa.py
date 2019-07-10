@@ -31,7 +31,7 @@ class LVFA:
         self.appox_Q = self.appox_Q - self.alpha * (self.appox_Q.T * self.feature_matrix[:, s1 * a1] - r - self.gamma * self.appox_Q.T * self.feature_matrix[:, s2 * a2]) * self.feature_matrix[:, s1 * a1]
 
     def get_Q(self):
-        return np.reshape(self.feature_matrix.T * self.appox_Q,(self.nS, self.nA))
+        return np.reshape(self.feature_matrix.T.dot(self.appox_Q),(self.nS, self.nA))
 
     def chooseAction(self, s):
         return self.policy(self.get_Q(), s)
