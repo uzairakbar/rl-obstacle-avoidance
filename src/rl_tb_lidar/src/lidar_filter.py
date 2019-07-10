@@ -86,8 +86,6 @@ def run():
     rospy.init_node('lidar_filter')
     filter = Lidar_Filter()
 
-    aa = 5
-
 if __name__ == '__main__':
     try:
         run()

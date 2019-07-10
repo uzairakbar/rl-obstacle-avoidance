@@ -13,15 +13,19 @@ import numpy as np
 from kobuki_msgs.msg import BumperEvent
 
 
-
 is_crashed = False
 
 
 class Turtlebot_Lidar_Env:
     def __init__(self, nA=10):
         self.vel_pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=5)
+        if Config.RUN_REAL_TURTLEBOT:
+            self.bumber_sub = rospy.Subscriber('mobile_base/events/bumper', BumperEvent, self.process_bump)
+        else:
+            self.reset_stage = rospy.ServiceProxy('reset_positions', EmptySrv)
+            self.teleporter = rospy.Publisher('/cmd_pose', Pose, queue_size=10)
+            self.crash_tracker = rospy.Subscriber('/odom', Odometry, self.crash_callback)
 
-        self.bumber_sub = rospy.Subscriber('mobile_base/events/bumper', BumperEvent, self.process_bump)
         self.state_space = range(Config.MAX_RANGE ** (Config.DISCRETIZE_RANGE))
         self.nS = len(self.state_space)
         self.reward_range = (-np.inf, np.inf)
@@ -104,9 +108,13 @@ class Turtlebot_Lidar_Env:
         discrete_state = 0
         min_range = 0.3
         done = False
-        a = data.ranges[0:60]
-        b = data.ranges[300:360]
-        data.ranges = np.concatenate((b, a), axis=None)
+        if Config.RUN_REAL_TURTLEBOT:
+            # NOTE: This filtering some part of the data is requires to obtain a coverage -60deg to +60deg.
+            a = data.ranges[0:60]
+            b = data.ranges[300:360]
+            data.ranges = np.concatenate((b, a), axis=None)
+        else:
+            data.ranges = data.ranges[120:240]
         if self.state_aggregation == "MIN":
             mod = len(data.ranges) / new_ranges
             for i in range(new_ranges):
@@ -359,3 +367,12 @@ class Config:
     Q_ALPHA = 0.01
     Q_GAMMA = 0.99
     Q_EPSILON = 0.1
+    RUN_REAL_TURTLEBOT = True   # Flag to determine whether the code is running on real tb or not.
+
+
+
+
+
+
+
+

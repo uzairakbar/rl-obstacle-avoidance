@@ -12,6 +12,17 @@ from sensor_msgs.msg import LaserScan
 
 
 def handle_collision(env, agent, base_filename, episodeRewardLog, last_action):
+    """
+    This function is called if the turtlebot hit some obstacles. The latest Q-matrix and reward function will be stored.
+    Also, turtlebot moves back from the obstacle.
+    :param env:
+    :param agent:
+    :param base_filename:
+    :param episodeRewardLog:
+    :param last_action:         Last action is necessary so that turtlebot applies the reverse of the last action to get rid of the obstacle.
+                                NOTE: Simple, move back function would also work fine to move away from the obstacle.
+    :return:
+    """
     print "Saving model and training log with " + base_filename + " as base filename."
     filename = "Qinit_" + base_filename
     agent.saveModel(filename)
@@ -21,7 +32,7 @@ def handle_collision(env, agent, base_filename, episodeRewardLog, last_action):
     return env.handle_collision(last_action)
 
 
-def run():
+def run_real():
     rospy.init_node('rl_agent_tb')
     env = en.Turtlebot_Lidar_Env()
     base_filename = 'Qlearning'
@@ -46,7 +57,7 @@ def run():
     data = None
     while data is None:
         try:
-            data = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+            data = rospy.wait_for_message('/scan_filtered', LaserScan, timeout=5)
         except:
             pass
 
@@ -86,9 +97,17 @@ def run():
     rospy.spin()
 
 
+def run_simulation():
+    # TODO: fill the code to run simulation.
+    a = 5
+
+
 if __name__ == '__main__':
     try:
-        run()
+        if en.Config.RUN_REAL_TURTLEBOT:
+            run_real()
+        else:
+            run_simulation()
     except rospy.ROSInterruptException:
         pass
 
