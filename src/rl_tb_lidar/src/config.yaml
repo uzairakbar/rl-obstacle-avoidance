@@ -1,4 +1,4 @@
-experiment_name: "M1_A1_S1_QL"
+experiment_name: "M2_A1_S1_QL"
 simulations: 3
 episodes: 1000
 save_freq: 100
@@ -6,7 +6,7 @@ save_q: True
 save_rewards: True
 save_lidar: False
 Environment:
-  map: "map1"
+  map: "map2"
   ActionSpace:
     space_type: 1
     read_sensor: True
