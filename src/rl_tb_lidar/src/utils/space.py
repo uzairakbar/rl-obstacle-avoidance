@@ -101,7 +101,7 @@ class ActionSpace(Space):
 
 import os
 from sensor_msgs.msg import LaserScan
-from sensormodel.sensormodel import SampleLIDAR
+from utils.sensormodel.sensormodel import SampleLIDAR
 from discretizer import Discretizer
 # from features import Features
 
