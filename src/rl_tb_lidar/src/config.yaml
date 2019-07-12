@@ -24,8 +24,6 @@ Environment:
 RLAgent:
   policy: "eps_greedy"
   lvfa : False
-  nA: 10
-  nS: 2560
   epsilon: 0.05
   alpha: 0.1
   gamma: 0.9
