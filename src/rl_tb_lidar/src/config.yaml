@@ -25,8 +25,8 @@ RLAgent:
   policy: "eps_greedy"
   lvfa : False
   epsilon: 0.05
-  alpha: 0.1
-  gamma: 0.9
+  alpha: 0.01
+  gamma: 0.99
   ellgibility_trace: True
 # What I want the RLAgent class interface to be like:
 # RLAgent:
