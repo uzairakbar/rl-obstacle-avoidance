@@ -1,0 +1,39 @@
+experiment_name: "M2_A1_S1_Size3_QL"
+simulations: 5
+episodes: 1000
+save_freq: 100
+save_q: True
+save_rewards: True
+save_lidar: False
+Environment:
+  map: "map2"
+  ActionSpace:
+    space_type: 1
+    read_sensor: True
+  StateSpace:
+    space_type: 1
+    reducer: "discretize"
+    sensor_model: 0 # DO NOT CHANGE
+    Discretizer:
+      discretize_type: "grid"
+      levels: 4
+      size: 3
+      crop: 120
+      clip_range: 2.0
+# Agent and LVFA to be made PROPERLY compatible with
+# the rest of the code, a bit more cleanly written. NOT DONE YET!!!
+RLAgent:
+  policy: "eps_greedy"
+  lvfa : False
+  epsilon: 0.05
+  alpha: 0.1
+  gamma: 0.9
+  ellgibility_trace: True
+
+saved_model: ""
+# What I want the RLAgent class interface to be like:
+# RLAgent:
+#   algorithm: 'qlearning'
+#   policy: 'softmax'
+#   eligibility: True
+#   lvfa: False
