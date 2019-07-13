@@ -11,6 +11,8 @@ class QLearn:
             self.Q = Q
 
         self.policy = policy
+        self.nA = nA
+        self.nS = nS
 
         self.E = np.zeros((nS, nA))
 

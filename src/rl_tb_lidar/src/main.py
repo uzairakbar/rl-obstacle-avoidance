@@ -69,6 +69,7 @@ if __name__ == '__main__':
             done = False
             cumulated_reward = 0
             state = env.reset_env()
+            agent.reset_ellgibility_trace()
             for i in range(500):
                 # Pick an action based on the current state
                 action_idx = agent.chooseAction(state)
