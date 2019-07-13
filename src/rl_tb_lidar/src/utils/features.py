@@ -1,7 +1,10 @@
 import numpy as np
 import torch
 
-# from autoencoders.autoencoders import AutoEncoder, VAE, DiscreteLatentVAE, VectorQuantizedVAE, GumbelVAE
+try:
+    from autoencoders.autoencoders import AutoEncoder, VAE, DiscreteLatentVAE, VectorQuantizedVAE, GumbelVAE
+except ImportError:
+    pass
 from discretizer import GridDiscretizer
 from misc import Cropper, ClipRange, MinMaxScaler, ToTensor
 
