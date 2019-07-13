@@ -103,7 +103,7 @@ import os
 from sensor_msgs.msg import LaserScan
 from utils.sensormodel.sensormodel import SampleLIDAR
 from discretizer import Discretizer
-# from features import Features
+from features import Features
 
 
 class StateSpace(Space):
@@ -137,8 +137,13 @@ class StateSpace(Space):
         # check this. change to reducer.levels**reducer.size or something
         if self.space_type == 1:
             self.size = self.reducer.size
+            self.space_size = self.reducer.levels**self.reducer.size
         else:
-            self.size = self.reducer.size + 2
+            if reducer == 'discretize':
+                self.size = self.reducer.size + 2
+                self.space_size = (self.reducer.levels**self..reducer.size)*10
+            else:
+                self.size = self.reducer.size + 10
         self.save_lidar = kwargs.setdefault('save_lidar', False)
         if self.save_lidar:
             self.save_iterator = 0

@@ -49,10 +49,7 @@ if __name__ == '__main__':
     env = Environment(save_lidar=save_lidar, **config['Environment'])
     for simulation in range(simulations):
         print "-=-=-=-=-=-=-=-=-=-=-= SIMULATION " + str(simulation + 1) + " =-=-=-=-=-=-=-=-=-=-=-"
-        if env.S.space_type == 1:
-            agent = Agent(nA=env.A.size, nS=env.S.reducer.levels**env.S.reducer.size, **config['RLAgent'])
-        else:
-            agent = Agent(nA=env.A.size, nS=(env.S.reducer.levels**env.S.reducer.size)*env.A.size, **config['RLAgent'])
+        agent = Agent(nA=env.A.size, nS=env.S.space_size, **config['RLAgent'])
 
         # loging stuff
         start_time = time.time()
