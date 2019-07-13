@@ -124,7 +124,7 @@ class StateSpace(Space):
             theta = [0.50858697, 0.01769387, 0.34746964, 0.12624952, 0.00421572, 0.72616816]
         else:
             theta = sensor_model
-        self.sensor_model = SampleLIDAR(sensor_model)
+        self.sensor_model = SampleLIDAR(theta=theta)
 
         if self.space_type == 1:
             pass

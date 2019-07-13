@@ -4,6 +4,7 @@ import rospy
 import numpy as np
 from nav_msgs.msg import Odometry
 from std_srvs.srv import Empty as EmptySrv
+from sensor_msgs.msg import LaserScan
 
 from utils.teleporter import Teleporter
 from utils.space import ActionSpace, StateSpace
@@ -32,7 +33,7 @@ class TurtlebotLIDAREnvironment():
         return reward
 
     def crash_callback(self, data):
-        if data.twist.twist.angular.z:
+        if data.twist.twist.linear.z:
             self.is_crashed = True
         else:
             self.is_crashed = False
