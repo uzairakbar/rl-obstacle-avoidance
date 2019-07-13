@@ -42,7 +42,7 @@ if __name__ == '__main__':
     save_rewards = config.setdefault("save_rewards", True)
     if save_rewards:
         try:
-            os.mkdir(experiment_name"/RewardLogs"+str(episodes)+"Episodes")
+            os.mkdir(experiment_name+"/RewardLogs"+str(episodes)+"Episodes")
         except OSError:
             pass
 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
                     filename = experiment_name+"/Q"+str(episodes)+"Episodes/"+experiment_name+"_sim"+str(simulation)
                     agent.save_model(filename)
                 if save_rewards:
-                    filename = experiment_name"/RewardLogs"+str(episodes)+"Episodes/"+experiment_name+"_sim"+str(simulation)
+                    filename = experiment_name+"/RewardLogs"+str(episodes)+"Episodes/"+experiment_name+"_sim"+str(simulation)
                     np.save(filename, np.asarray(episode_reward_log))
 
             m, s = divmod(int(time.time() - start_time), 60)

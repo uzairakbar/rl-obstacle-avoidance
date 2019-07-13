@@ -149,7 +149,7 @@ class StateSpace(Space):
         else:
             if reducer == 'discretize':
                 self.size = self.reducer.size + 2
-                self.space_size = (self.reducer.levels**self..reducer.size)*10
+                self.space_size = (self.reducer.levels**self.reducer.size)*10
             else:
                 self.size = self.reducer.size + 10
         self.save_lidar = kwargs.setdefault('save_lidar', False)

@@ -1,12 +1,13 @@
 import numpy as np
-import torch
+
+from discretizer import GridDiscretizer
+from misc import Cropper, ClipRange, MinMaxScaler, ToTensor
 
 try:
+    import torch
     from autoencoders.autoencoders import AutoEncoder, VAE, DiscreteLatentVAE, VectorQuantizedVAE, GumbelVAE
 except ImportError:
     pass
-from discretizer import GridDiscretizer
-from misc import Cropper, ClipRange, MinMaxScaler, ToTensor
 
 MAX_RANGE = 16.0
 MIN_RANGE = 0.3
