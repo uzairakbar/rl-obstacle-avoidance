@@ -120,14 +120,6 @@ class Turtlebot_Lidar_Env:
             for i in range(new_ranges):
 
                 discrete_state = discrete_state * Config.MAX_RANGE
-                #beam_number_1 = mod * i
-                #beam_number_2 = mod * (i+1)
-
-                #aggregator = data.ranges[beam_number]
-                #if aggregator == float('Inf'):
-                #    aggregator = self.approximate_observation(beam_number, data.ranges)
-                # NOTE: Actually we do not need to call the approximate_observation function since we pick the lowest
-                # value within the range. If we want to use a concrete beams, then we will need such an approximation.
                 aggregator = min(data.ranges[mod * i: mod * (i + 1)])
                 if aggregator > 1:
                     aggregator = 2
