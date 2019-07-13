@@ -13,13 +13,13 @@ Environment:
   StateSpace:
     space_type: 1
     reducer: "discretize"
-    sensor_model: [0.50858697, 0.01769387, 0.34746964, 0.12624952, 0.00421572, 0.72616816]
+    sensor_model: 1
     Discretizer:
       discretize_type: "grid"
       levels: 4
       size: 4
       crop: 60
-      clip: 2.0
+      clip_range: 2.0
 # Agent and LVFA to be made PROPERLY compatible with
 # the rest of the code, a bit more cleanly written. NOT DONE YET!!!
 RLAgent:

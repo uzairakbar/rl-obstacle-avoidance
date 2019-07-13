@@ -1,7 +1,7 @@
 import numpy as np
 
 MAX_RANGE = 16.0
-CLIP_RANGE = 5.0
+CLIP_RANGE = 2.0
 
 
 class Cropper(object):

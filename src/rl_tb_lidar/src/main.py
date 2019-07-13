@@ -25,34 +25,40 @@ if __name__ == '__main__':
     experiment_name = config.setdefault('experiment_name', '')
     simulations = config.setdefault('simulations', 1)
     episodes = config.setdefault('episodes', 100)
+
+    try:
+        os.mkdir(experiment_name)
+    except OSError:
+        print "Exeriment directory "+experiment_name+" either exists or is not a valid path. Please provide a valid path and delete previously existing directory if it exists."
+        quit()
+
     save_q = config.setdefault('save_q', False)
     if save_q:
         try:
-            os.mkdir(experiment_name+str(episodes)+"Q")
+            os.mkdir(experiment_name+"/Q"+str(episodes)+"Episodes")
         except OSError:
             pass
-    save_rewards = config.setdefault('save_rewards', True)
+
+    save_rewards = config.setdefault("save_rewards", True)
     if save_rewards:
         try:
-            os.mkdir(experiment_name+str(episodes)+"RewardLogs")
+            os.mkdir(experiment_name"/RewardLogs"+str(episodes)+"Episodes")
         except OSError:
             pass
-    save_lidar = config.setdefault('save_lidar', False)
+
+    save_lidar = config.setdefault("save_lidar", False)
     if save_lidar:
-        save_lidar = experiment_name+'LidarData'
+        save_lidar = experiment_name+"/LidarData"
         try:
             os.mkdir(save_lidar)
         except OSError:
             pass
-    save_freq = config.setdefault('save_freq', 10)
+    save_freq = config.setdefault("save_freq", 100)
 
     env = Environment(save_lidar=save_lidar, **config['Environment'])
     for simulation in range(simulations):
         print "-=-=-=-=-=-=-=-=-=-=-= SIMULATION " + str(simulation + 1) + " =-=-=-=-=-=-=-=-=-=-=-"
-        if env.S.space_type == 1:
-            agent = Agent(nA=env.A.size, nS=env.S.reducer.levels**env.S.reducer.size, **config['RLAgent'])
-        else:
-            agent = Agent(nA=env.A.size, nS=(env.S.reducer.levels**env.S.reducer.size)*env.A.size, **config['RLAgent'])
+        agent = Agent(nA=env.A.size, nS=env.S.space_size, **config['RLAgent'])
 
         # loging stuff
         start_time = time.time()
@@ -86,10 +92,10 @@ if __name__ == '__main__':
             if (episode + 1) % save_freq == 0:
                 print "Saving model/training log with " + experiment_name + " as base filename."
                 if save_q:
-                    filename = experiment_name+str(episodes)+"Q/"+experiment_name+"Sim"+str(simulation)+"Q"
+                    filename = experiment_name+"/Q"+str(episodes)+"Episodes/"+experiment_name+"_sim"+str(simulation)
                     agent.save_model(filename)
                 if save_rewards:
-                    filename = experiment_name+str(episodes)+"RewardLogs/"+experiment_name+"Sim"+str(simulation)+"RewardLogs"
+                    filename = experiment_name"/RewardLogs"+str(episodes)+"Episodes/"+experiment_name+"_sim"+str(simulation)
                     np.save(filename, np.asarray(episode_reward_log))
 
             m, s = divmod(int(time.time() - start_time), 60)

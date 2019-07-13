@@ -1,15 +1,18 @@
 import numpy as np
 import torch
 
-# from autoencoders.autoencoders import AutoEncoder, VAE, DiscreteLatentVAE, VectorQuantizedVAE, GumbelVAE
+try:
+    from autoencoders.autoencoders import AutoEncoder, VAE, DiscreteLatentVAE, VectorQuantizedVAE, GumbelVAE
+except ImportError:
+    pass
 from discretizer import GridDiscretizer
 from misc import Cropper, ClipRange, MinMaxScaler, ToTensor
 
 MAX_RANGE = 16.0
 MIN_RANGE = 0.3
-CLIP_RANGE = 5.0
-LEVELS = 5
-SIZE = 6
+CLIP_RANGE = 2.0
+LEVELS = 4
+SIZE = 4
 GRIDS = 1
 
 

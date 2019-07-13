@@ -28,7 +28,7 @@ class TurtlebotLIDAREnvironment():
         if crashed:
             reward = C
         else:
-            reward = velocities[0]*np.cos(velocities[1]*3.0)*STEP_TIME
+            reward = velocities[0]*np.cos(velocities[1])*STEP_TIME
         return reward
 
     def crash_callback(self, data):

@@ -1,15 +1,20 @@
 import numpy as np
-# import torch
 
-# from autoencoders.autoencoders import VectorQuantizedVAE, GumbelVAE
-from misc import Cropper, ClipRange, MinMaxScaler#, ToTensor
+from misc import Cropper, ClipRange, MinMaxScaler
 from utils.sensormodel.sensormodel import truncnorm_rvs_recursive
+
+try:
+    import torch
+    from autoencoders.autoencoders import VectorQuantizedVAE, GumbelVAE
+    from misc import ToTensor
+except ImportError:
+    pass
 
 MAX_RANGE = 16.0
 MIN_RANGE = 0.3
-CLIP_RANGE = 5.0
-LEVELS = 5
-SIZE = 6
+CLIP_RANGE = 2.0
+LEVELS = 4
+SIZE = 4
 
 
 class DiscretizerMixin(object):
