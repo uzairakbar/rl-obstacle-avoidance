@@ -11,6 +11,7 @@ from environment import TurtlebotLIDAREnvironment as Environment
 
 
 if __name__ == '__main__':
+    # NOTE: This part should be commented to be able to run debug it in Pycharm.
     if len(sys.argv) < 2:
         print('run: python <script> <config>')
         sys.exit(1)
@@ -20,6 +21,8 @@ if __name__ == '__main__':
     except:
         config = {}
 
+    # NOTE: activate this part to debug the code
+    #config = yaml.load(open('config.yaml'))
     rospy.init_node('rl_agent_tb')
 
     experiment_name = config.setdefault('experiment_name', '')

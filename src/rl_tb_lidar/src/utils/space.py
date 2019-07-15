@@ -112,8 +112,14 @@ class StateSpace(Space):
                  reducer = 'discretize',
                  reducer_type = None,
                  sensor_model = 0,
+                 lidar_filter = False,
                  **kwargs):
         super(StateSpace, self).__init__(None)
+
+        if lidar_filter:
+            self.lidar_filter = True
+        else:
+            self.lidar_filter = False
 
         self.space_type = space_type
         if sensor_model == 0:
@@ -181,7 +187,10 @@ class StateSpace(Space):
         signal = None
         while signal is None:
             try:
-                signal = rospy.wait_for_message('/scan', LaserScan, timeout=5)
+                if self.lidar_filter:
+                    signal = rospy.wait_for_message('/scan_filtered', LaserScan, timeout=5)
+                else:
+                    signal = rospy.wait_for_message('/scan', LaserScan, timeout=5)
             except:
                 continue
         signal = np.asarray(signal.ranges)
