@@ -1,0 +1,8 @@
+<launch>
+    <include file="$(find rl_tb_lidar)/turtlebot_stage/launch/turtlebot_in_stage.launch">
+    <arg name="map_file" value=" $(find rl_tb_lidar)/turtlebot_stage/maps/map7/map_7.yaml" />
+    <arg name="world_file" value=" $(find rl_tb_lidar)/turtlebot_stage/maps/map7/map_7.world" /> 
+    </include>
+    <node pkg="rl_tb_lidar" type="lidar_filter.py" name="lidar_filter" output="screen">
+    </node>
+</launch>
