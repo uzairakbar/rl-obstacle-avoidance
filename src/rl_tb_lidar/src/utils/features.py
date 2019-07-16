@@ -19,11 +19,12 @@ GRIDS = 1
 
 class FeaturesMixin(object):
     def __init__(self,
+                 real_turtlebot,
                  size = SIZE,
                  crop = None,
                  **kwargs):
         self.size = size
-        self.cropper = Cropper(crop)
+        self.cropper = Cropper(real_turtlebot, crop)
 
     def __call__(self, x):
         z = self.get_features(x)
@@ -39,6 +40,7 @@ class FeaturesMixin(object):
 
 class GridFeatures(FeaturesMixin):
     def __init__(self,
+                 real_turtlebot,
                  levels=LEVELS,
                  size=SIZE,
                  crop=None,
@@ -46,8 +48,9 @@ class GridFeatures(FeaturesMixin):
                  max_range=MAX_RANGE,
                  clip_range=CLIP_RANGE,
                  **kwargs):
-        super(GridFeatures, self).__init__(size=size, crop=crop)
-        self.grid = GridDiscretizer(randomize_bins=False,
+        super(GridFeatures, self).__init__(real_turtlebot, size=size, crop=crop)
+        self.grid = GridDiscretizer(real_turtlebot,
+                                    randomize_bins=False,
                                     levels=levels,
                                     size=size,
                                     enumerate=False,
@@ -63,6 +66,7 @@ class GridFeatures(FeaturesMixin):
 
 class TileCodingFeatures(FeaturesMixin):
     def __init__(self,
+                 real_turtlebot,
                  grids=GRIDS,
                  levels=LEVELS,
                  size=SIZE,
@@ -71,9 +75,10 @@ class TileCodingFeatures(FeaturesMixin):
                  max_range=MAX_RANGE,
                  clip_range=CLIP_RANGE,
                  **kwargs):
-        super(TileCodingFeatures, self).__init__(size=size, crop=crop)
+        super(TileCodingFeatures, self).__init__(real_turtlebot, size=size, crop=crop)
         self.size = levels**size
-        self.grids = [GridDiscretizer(randomize_bins=i,
+        self.grids = [GridDiscretizer(real_turtlebot,
+                                      randomize_bins=i,
                                       levels=levels,
                                       size=size,
                                       enumerate=True,
@@ -91,6 +96,7 @@ class TileCodingFeatures(FeaturesMixin):
 
 class AEFeatures(FeaturesMixin):
     def __init__(self,
+                 real_turtlebot,
                  path,
                  levels=LEVELS,
                  size=SIZE,
@@ -99,7 +105,7 @@ class AEFeatures(FeaturesMixin):
                  max_range=MAX_RANGE,
                  clip_range=CLIP_RANGE,
                  **kwargs):
-        super(AEFeatures, self).__init__(size=size, crop=crop)
+        super(AEFeatures, self).__init__(real_turtlebot, size=size, crop=crop)
         self.model = torch.load(path, map_location=lambda storage, loc: storage).eval()
 
         if isinstance(self.model, VectorQuantizedVAE):
@@ -135,8 +141,8 @@ class AEFeatures(FeaturesMixin):
 
 ###################### REMEMBER TO CHANGE RACHID'S CODE TO A PROPER CLASS HERE !!!!!!!!!!!!!!!!!!!!!
 class RandomFeatures(FeaturesMixin):
-    def __init__(self, **kwargs):
-        super(RandomFeatures, self).__init__(**kwargs)
+    def __init__(self, real_turtlebot, **kwargs):
+        super(RandomFeatures, self).__init__(real_turtlebot, **kwargs)
 
     def get_features(self, x):
         z = x
@@ -144,8 +150,8 @@ class RandomFeatures(FeaturesMixin):
 
 
 class Features(FeaturesMixin):
-    def __init__(self, features_type, **kwargs):
-        super(Features, self).__init__(**kwargs)
+    def __init__(self, features_type, real_turtlebot, **kwargs):
+        super(Features, self).__init__(real_turtlebot=real_turtlebot, **kwargs)
         self.features_type = features_type
 
         if self.features_type == 'grid':

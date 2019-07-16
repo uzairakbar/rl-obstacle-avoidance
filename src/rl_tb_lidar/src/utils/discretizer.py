@@ -19,6 +19,7 @@ SIZE = 4
 
 class DiscretizerMixin(object):
     def __init__(self,
+                 real_turtlebot,
                  levels=LEVELS,
                  size=SIZE,
                  enumerate=True,
@@ -27,7 +28,7 @@ class DiscretizerMixin(object):
         self.levels = levels
         self.size = size
         self.enumerate = enumerate
-        self.cropper = Cropper(crop)
+        self.cropper = Cropper(real_turtlebot, crop)
 
     def __call__(self, x):
         z = self.discretize(x)
@@ -50,6 +51,7 @@ class DiscretizerMixin(object):
 
 class GridDiscretizer(DiscretizerMixin):
     def __init__(self,
+                 real_turtlebot,
                  randomize_bins=False,
                  levels=LEVELS,
                  size=SIZE,
@@ -59,7 +61,8 @@ class GridDiscretizer(DiscretizerMixin):
                  max_range=MAX_RANGE,
                  clip_range=CLIP_RANGE,
                  **kwargs):
-        super(GridDiscretizer, self).__init__(levels=levels,
+        super(GridDiscretizer, self).__init__(real_turtlebot,
+                                              levels=levels,
                                               size=size,
                                               enumerate=enumerate,
                                               crop=crop)
@@ -96,6 +99,7 @@ class GridDiscretizer(DiscretizerMixin):
 
 class VAEDiscretizer(DiscretizerMixin):
     def __init__(self,
+                 real_turtlebot,
                  path,
                  levels=LEVELS,
                  size=SIZE,
@@ -105,7 +109,8 @@ class VAEDiscretizer(DiscretizerMixin):
                  max_range=MAX_RANGE,
                  clip_range=CLIP_RANGE,
                  **kwargs):
-        super(VAEDiscretizer, self).__init__(levels=levels,
+        super(VAEDiscretizer, self).__init__(real_turtlebot,
+                                             levels=levels,
                                              size=size,
                                              enumerate=enumerate,
                                              crop=crop)
@@ -137,14 +142,14 @@ class VAEDiscretizer(DiscretizerMixin):
 
 
 class Discretizer(DiscretizerMixin):
-    def __init__(self, discretize_type, **kwargs):
-        super(Discretizer, self).__init__(**kwargs)
+    def __init__(self, discretize_type, real_turtlebot, **kwargs):
+        super(Discretizer, self).__init__(real_turtlebot=real_turtlebot, **kwargs)
         self.discretize_type = discretize_type
 
         if self.discretize_type == 'grid':
-            self.disc = GridDiscretizer(**kwargs)
+            self.disc = GridDiscretizer(real_turtlebot=real_turtlebot, **kwargs)
         elif self.discretize_type == 'autoencoder':
-            self.disc = VAEDiscretizer(**kwargs)
+            self.disc = VAEDiscretizer(real_turtlebot=real_turtlebot, **kwargs)
         else:
             raise ValueError("discretizer type can either be grid or vae, but got {} instead.".format(self.discretize_type))
 

@@ -1,13 +1,13 @@
-experiment_name: "M2_A1_S1_Size3_QL"
+experiment_name: "M2_A1_S1_Size3_QL_Real"
 simulations: 5
 episodes: 1000
 save_freq: 100
-save_q: True
+save_q: False
 save_rewards: True
 save_lidar: False
 Environment:
   map: "map2"
-  real_turtlebot: False
+  real_turtlebot: True
   ActionSpace:
     space_type: 1
     read_sensor: True

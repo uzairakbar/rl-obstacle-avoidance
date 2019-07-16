@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import numpy as np
 from lvfa import LVFA
-from  qlearn import QLearn
+from qlearn import QLearn
 from policies import Policy
 
 class Agent():

@@ -78,9 +78,9 @@ class ActionSpace(Space):
             self.execute(sample)
         return sample
 
-    def execute(self, action):
+    def execute(self, action, intensify = 1):
         vel_cmd = Twist()
-        vel_cmd.linear.x = action[0]
+        vel_cmd.linear.x = action[0] * intensify
         vel_cmd.angular.z = action[1]
         self.vel_pub.publish(vel_cmd)
         self.prev_action = action
@@ -115,6 +115,7 @@ class StateSpace(Space):
                  lidar_filter = False,
                  **kwargs):
         super(StateSpace, self).__init__(None)
+        real_turtlebot = kwargs.setdefault('real_turtlebot', False)
 
         if lidar_filter:
             self.lidar_filter = True
@@ -142,9 +143,9 @@ class StateSpace(Space):
             raise ValueError("space can only be either 1 or 2, but got "+str(space)+".")
 
         if reducer == 'discretize':
-            self.reducer = Discretizer(**kwargs['Discretizer'])
+            self.reducer = Discretizer(real_turtlebot=real_turtlebot, **kwargs['Discretizer'])
         elif reducer == 'features':
-            self.reducer = Features(**kwargs['Features'])
+            self.reducer = Features(real_turtlebot=real_turtlebot, **kwargs['Features'])
         else:
             raise ValueError("reducer can only be either discretize or features, but got "+reducer+" instead.")
 

@@ -6,15 +6,27 @@ CLIP_RANGE = 2.0
 
 class Cropper(object):
     """Crop middle section of array."""
-    def __init__(self, size=None):
-        if size is not None:
-            self.size = int((360 - size)/2)
+    def __init__(self, real_turtlebot = False, size=None):
+        self.real_turtlebot = real_turtlebot
+        if self.real_turtlebot:
+            if size is not None:
+                self.size = int(size/2)
+            else:
+                self.size = 0
         else:
-            self.size = 0
+            if size is not None:
+                self.size = int((360 - size)/2)
+            else:
+                self.size = 0
 
     def __call__(self, sample):
         if self.size > 0:
-            sample = sample[self.size:-self.size]
+            if self.real_turtlebot:
+                tmp_1 = sample[0:self.size]
+                tmp_2 = sample[360-self.size:360]
+                sample = np.concatenate((tmp_2, tmp_1), axis=None)
+            else:
+                sample = sample[self.size:-self.size]
         return sample
 
 

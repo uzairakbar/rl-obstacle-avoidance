@@ -32,7 +32,7 @@ if __name__ == '__main__':
     try:
         os.mkdir(experiment_name)
     except OSError:
-        print "Exeriment directory "+experiment_name+" either exists or is not a valid path. Please provide a valid path and delete previously existing directory if it exists."
+        print "Experiment directory "+experiment_name+" either exists or is not a valid path. Please provide a valid path and delete previously existing directory if it exists."
         quit()
 
     save_q = config.setdefault('save_q', False)
