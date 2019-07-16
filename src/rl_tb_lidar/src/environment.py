@@ -17,8 +17,8 @@ class TurtlebotLIDAREnvironment():
         save_lidar = kwargs.setdefault('save_lidar', False)
         self.A = ActionSpace(**kwargs['ActionSpace'])
         self.S = StateSpace(save_lidar=save_lidar, **kwargs['StateSpace'])
-
-        self.teleporter = Teleporter(map)
+        self.map = map
+        self.teleporter = Teleporter()
 
         self.is_crashed = False
         self.crash_tracker = rospy.Subscriber('/odom', Odometry, self.crash_callback)
@@ -40,7 +40,11 @@ class TurtlebotLIDAREnvironment():
 
     def reset_env(self):
         try:
-            self.teleporter.teleport_predefined()
+            if self.map == "map7":
+                #Special map for domain randomization.
+                self.teleporter.teleport_domain_randomization()
+            else:
+                self.teleporter.teleport_predefined(self.map)
         except (rospy.ServiceException) as e:
             print ("reset_simulation service call failed")
         state = self.S.state(self.A.prev_action)

@@ -22,7 +22,7 @@ if __name__ == '__main__':
         config = {}
 
     # NOTE: activate this part to debug the code
-    #config = yaml.load(open('config.yaml'))
+    #config = yaml.load(open('configs/config_domain_randomization.yaml'))
     rospy.init_node('rl_agent_tb')
 
     experiment_name = config.setdefault('experiment_name', '')
