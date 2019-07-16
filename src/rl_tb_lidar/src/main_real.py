@@ -17,17 +17,17 @@ from sensor_msgs.msg import LaserScan
 
 if __name__ == '__main__':
     # NOTE: This part should be commented to be able to run debug it in Pycharm.
-#    if len(sys.argv) < 2:
-#        print('run: python <script> <config>')
-#        sys.exit(1)
-#    script = sys.argv[0]
-#    try:
-#        config = yaml.load(open(sys.argv[1]))
-#    except:
-#        config = {}
+    if len(sys.argv) < 2:
+        print('run: python <script> <config>')
+        sys.exit(1)
+    script = sys.argv[0]
+    try:
+        config = yaml.load(open(sys.argv[1]))
+    except:
+        config = {}
 
     # NOTE: activate this part to debug the code
-    config = yaml.load(open('config_real.yaml'))
+    #config = yaml.load(open('config_real.yaml'))
     rospy.init_node('rl_agent_tb')
 
     experiment_name = config.setdefault('experiment_name', '')
