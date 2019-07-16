@@ -47,6 +47,8 @@ class TurtlebotLIDAREnvironment():
                 self.teleporter.teleport_predefined(self.map)
         except (rospy.ServiceException) as e:
             print ("reset_simulation service call failed")
+        reset_action = np.asarray([0.2, 0.])
+        self.A.prev_action = reset_action
         state = self.S.state(self.A.prev_action)
         return state
 
