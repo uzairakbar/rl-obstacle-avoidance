@@ -1,4 +1,4 @@
-experiment_name: "M2_A1_S1_Size3_QL"
+experiment_name: "M2_A1_S1_Size5_QL"
 simulations: 5
 episodes: 1000
 save_freq: 100
@@ -23,14 +23,14 @@ Environment:
 # Agent and LVFA to be made PROPERLY compatible with
 # the rest of the code, a bit more cleanly written. NOT DONE YET!!!
 RLAgent:
-  policy: "eps_greedy"
+  policy: "greedy" # Do not change it
   lvfa : False
   epsilon: 0.05
   alpha: 0.1
   gamma: 0.9
   ellgibility_trace: True
 
-saved_model: ""
+saved_model: "M2_A1_S1_Size3_QL_sim0.npy"
 # What I want the RLAgent class interface to be like:
 # RLAgent:
 #   algorithm: 'qlearning'

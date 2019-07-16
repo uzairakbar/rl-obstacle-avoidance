@@ -14,7 +14,7 @@ from utils.teleporter import Teleporter
 from utils.space import ActionSpace, StateSpace
 
 C = -10
-STEP_TIME = 0.0666
+STEP_TIME = 0.15
 
 class TurtlebotLIDAREnvironment():
     def __init__(self, map, **kwargs):
@@ -95,6 +95,13 @@ class TurtleBotRealEnvironment():
         state = self.S.state(last_action)
         return state
 
+
+    def reward_function(self, velocities, crashed):
+        if crashed:
+            reward = C
+        else:
+            reward = velocities[0]*np.cos(velocities[1])*STEP_TIME
+        return reward
 
     def step(self, action_idx):
         action = self.A.action(action_idx, execute=True)

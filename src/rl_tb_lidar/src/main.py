@@ -24,7 +24,7 @@ if __name__ == '__main__':
     rospy.init_node('rl_agent_tb')
     env = Environment(save_lidar=False, **config['Environment'])
     agent = Agent(nA=env.A.size, nS=env.S.space_size, **config['RLAgent'])
-    agent.load_model(**config["saved_model"])
+    agent.load_model("M2_A1_S1_Size3_QL_sim0.npy")
     cumulated_reward = 0
     i = 0
 
@@ -40,7 +40,7 @@ if __name__ == '__main__':
         next_state, reward, done = env.step(action_idx)
 
         # Lean
-        agent.learn(state, action_idx, reward, next_state)
+        #agent.learn(state, action_idx, reward, next_state)
 
         if not (done):
             state = next_state
