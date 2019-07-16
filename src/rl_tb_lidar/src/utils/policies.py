@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.special import softmax
 
 
 
@@ -26,7 +25,8 @@ class RandomPolicy(object):
 class GreedyPolicy(RandomPolicy):
 	def __init__(self,
 				 nA = 10,
-				 lvfa = False):
+				 lvfa = False,
+				 **kwargs):
 		super(GreedyPolicy, self).__init__(nA = nA,
 										   lvfa = lvfa)
 	def approx_values(self, state, params):
@@ -73,12 +73,17 @@ class EpsilonGreedyPolicy(GreedyPolicy):
 				 nA = 10,
 				 lvfa = False,
 				 epsilon = 0.05,
-				 episodes = 1000):
+				 episodes = 1000,
+				 **kwargs):
 		super(EpsilonGreedyPolicy, self).__init__(nA = nA,
 												  lvfa = lvfa)
 		self.epsilon = epsilon
-		self.epsilon_list = np.concatenate((np.geomspace(1.0, epsilon, int(episodes*2.0/3)),
-										np.repeat(epsilon, episodes - int(episodes*2.0/3))))
+		try:
+			self.epsilon_list = np.concatenate((np.geomspace(1.0, epsilon, int(episodes*2.0/3)),
+											np.repeat(epsilon, episodes - int(episodes*2.0/3))))
+		except:
+			self.epsilon_list = np.concatenate((np.logspace(np.log10(1.0), np.log10(epsilon), int(episodes*2.0/3)),
+											np.repeat(epsilon, episodes - int(episodes*2.0/3))))
 
 	def action(self,
 			   state,
@@ -97,22 +102,35 @@ class EpsilonGreedyPolicy(GreedyPolicy):
 
 
 
+def softmax(x, axis=None):
+	x = x - x.max(axis=axis, keepdims=True)
+	y = np.exp(x)
+	return y/y.sum(axis=axis, keepdims=True)
+
+
+
 class SoftmaxPolicy(GreedyPolicy):
 	def __init__(self,
 				 nA = 10,
 				 lvfa = False,
 				 temperature = 0.05,
-				 episodes = 1000):
+				 episodes = 1000,
+				 **kwargs):
 		super(SoftmaxPolicy, self).__init__(nA = nA,
 												  lvfa = lvfa)
 		self.temperature = temperature
-		self.temperature_list = np.concatenate((np.geomspace(1.0, temperature, int(episodes*2.0/3)),
-										np.repeat(temperature, episodes - int(episodes*2.0/3))))
+		try:
+			self.temperature_list = np.concatenate((np.geomspace(1.0, temperature, int(episodes*2.0/3)),
+											np.repeat(temperature, episodes - int(episodes*2.0/3))))
+		except:
+			self.temperature_list = np.concatenate((np.logspace(np.log10(1.0), np.log10(temperature), int(episodes*2.0/3)),
+											np.repeat(temperature, episodes - int(episodes*2.0/3))))
 
 	def action(self,
 			   state,
 			   params,
-			   episode=None):
+			   episode=None,
+			   **kwargs):
 		try:
 			temp = self.temperature_list[episode]
 		except:
@@ -144,7 +162,6 @@ class Policy(GreedyPolicy):
 		if policy == 'greedy':
 			self.policy = GreedyPolicy(nA = nA,
 									   lvfa = lvfa,
-									   episodes = episodes,
 									   **kwargs)
 		if policy == 'eps_greedy':
 			self.policy = EpsilonGreedyPolicy(nA = nA,

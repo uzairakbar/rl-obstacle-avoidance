@@ -73,7 +73,7 @@ class QLearning(RLAlgorithmMixin):
 							  reward,
 							  next_state,
 							  next_action = None):
-		
+
 		if self.lvfa:
 			next_action = self.greedy_lvfa_action(next_state)
 			onehot_a = self.actions_onehot[action, :]
@@ -125,8 +125,8 @@ class SARSA(RLAlgorithmMixin):
 		if self.lvfa:
 			onehot_a = self.actions_onehot[action, :]
 			onehot_a_ = self.actions_onehot[next_action, :]
-			phi_s_ = np.concatenate((next_state, next_action))
-			phi_s = np.concatenate((state, action))
+			phi_s_ = np.concatenate((next_state, onehot_a_))
+			phi_s = np.concatenate((state, onehot_a))
 			td_target = reward + self.gamma * np.multiply(self.params, phi_s_).sum()
 			td_error = td_target - np.multiply(self.params, phi_s).sum()
 			self.E = self.gamma * self.lamda * self.E + phi_s
