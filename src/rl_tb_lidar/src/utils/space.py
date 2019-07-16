@@ -151,7 +151,8 @@ class StateSpace(Space):
         # check this. change to reducer.levels**reducer.size or something
         if self.space_type == 1:
             self.size = self.reducer.size
-            self.space_size = self.reducer.levels**self.reducer.size
+            if reducer == 'discretize':
+                self.space_size = self.reducer.levels**self.reducer.size
         else:
             if reducer == 'discretize':
                 self.size = self.reducer.size + 2

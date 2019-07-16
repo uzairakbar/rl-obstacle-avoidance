@@ -6,7 +6,8 @@ import time
 import rospy
 import numpy as np
 
-from rl_agent import Agent
+# from rl_agent import Agent
+from agent import Agent
 from environment import TurtlebotLIDAREnvironment as Environment
 
 
@@ -31,6 +32,8 @@ if __name__ == '__main__':
 
     try:
         os.mkdir(experiment_name)
+        with open(experiment_name+'/config.yaml', 'w') as config_file:
+            yaml.dump(config, config_file, default_flow_style=False)
     except OSError:
         print "Exeriment directory "+experiment_name+" either exists or is not a valid path. Please provide a valid path and delete previously existing directory if it exists."
         quit()
@@ -61,7 +64,10 @@ if __name__ == '__main__':
     env = Environment(save_lidar=save_lidar, **config['Environment'])
     for simulation in range(simulations):
         print "-=-=-=-=-=-=-=-=-=-=-= SIMULATION " + str(simulation + 1) + " =-=-=-=-=-=-=-=-=-=-=-"
-        agent = Agent(nA=env.A.size, nS=env.S.space_size, **config['RLAgent'])
+        if config['RLAgent']['lvfa']:
+            agent = Agent(nA=env.A.size, nS=env.S.size, episodes = episodes, **config['RLAgent'])
+        else:
+            agent = Agent(nA=env.A.size, nS=env.S.space_size, episodes = episodes, **config['RLAgent'])
 
         # loging stuff
         start_time = time.time()
@@ -72,20 +78,32 @@ if __name__ == '__main__':
             done = False
             cumulated_reward = 0
             state = env.reset_env()
-            agent.reset_ellgibility_trace()
+            agent.reset_eligibility()
+            
+            if config['RLAgent']['algorithm'] == 'sarsa':
+                action_idx = agent.action(state, episode)
+            elif config['RLAgent']['algorithm'] == 'qlearning':
+                next_action_idx = None
             for i in range(500):
-                # Pick an action based on the current state
-                action_idx = agent.chooseAction(state)
-                # Execute the action and get feedback
-                next_state, reward, done = env.step(action_idx)
+                if config['RLAgent']['algorithm'] == 'sarsa':
+                    next_state, reward, done = env.step(action_idx)
+                    next_action_idx = agent.action(next_state, episode)
+                elif config['RLAgent']['algorithm'] == 'qlearning':
+                    action_idx = agent.action(state, episode)
+                    next_state, reward, done = env.step(action_idx)
+                
+                agent.learn(state,
+                            action_idx,
+                            reward,
+                            next_state,
+                            next_action_idx)
 
                 cumulated_reward += reward
                 if highest_reward < cumulated_reward:
                     highest_reward = cumulated_reward
 
-                agent.learn(state, action_idx, reward, next_state)
-
                 if not(done):
+                    action_idx = next_action_idx
                     state = next_state
                 else:
                     last_time_steps = np.append(last_time_steps, [int(i + 1)])

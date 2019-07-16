@@ -9,6 +9,7 @@ try:
 except ImportError:
     pass
 
+
 MAX_RANGE = 16.0
 MIN_RANGE = 0.3
 CLIP_RANGE = 2.0
@@ -133,6 +134,7 @@ class AEFeatures(FeaturesMixin):
             z = model.encode(x_tensor)
         return z.detach().numpy().reshape(self.size)
 
+
 ###################### REMEMBER TO CHANGE RACHID'S CODE TO A PROPER CLASS HERE !!!!!!!!!!!!!!!!!!!!!
 class RandomFeatures(FeaturesMixin):
     def __init__(self, **kwargs):
@@ -161,5 +163,5 @@ class Features(FeaturesMixin):
 
         self.size = self.feat.size
 
-    def discretize(self, x):
+    def get_features(self, x):
         return self.feat.get_features(x)
