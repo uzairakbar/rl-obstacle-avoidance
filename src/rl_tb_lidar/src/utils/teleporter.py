@@ -38,20 +38,20 @@ class Teleporter(object):
         cmd_pose.position.y = offset_y
         if map == "map1":
             if r == 1:
-                cmd_pose.position.x += 1.0
-                cmd_pose.position.y += 2.0
+                cmd_pose.position.x += 4.0
+                cmd_pose.position.y += 2.5
             elif r == 2:
                 cmd_pose.position.x += 5.0
-                cmd_pose.position.y += 5.0
+                cmd_pose.position.y += 6.5
             elif r ==3:
-                cmd_pose.position.x += 7.0
-                cmd_pose.position.y += 8.0
+                cmd_pose.position.x += 7.5
+                cmd_pose.position.y += 2.4
             elif r==4:
-                cmd_pose.position.x += 3.0
-                cmd_pose.position.y += 1.0
+                cmd_pose.position.x += 4.0
+                cmd_pose.position.y += 3.5
             else:
-                cmd_pose.position.x += 6.0
-                cmd_pose.position.y += 2.0
+                cmd_pose.position.x += 4.0
+                cmd_pose.position.y += 3.5
         elif map == "map2":
             if r == 1:
                 cmd_pose.position.x += 2.0
