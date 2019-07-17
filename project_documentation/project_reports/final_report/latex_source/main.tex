@@ -37,7 +37,7 @@
 \begin{titlingpage}
     \maketitle
     \begin{abstract}
-This report presents our progress for the TUM Applied Reinforcement Learning class project (Summer Semester 2019). We have successfully completed a simple implementation of the Q-learning algorithm for obstacle avoidance using LIDAR ranging data. The agent is tested in a Stage simulator environment and selected preliminary results are presented herein.
+This report presents the final status for the TUM Applied Reinforcement Learning class project (Summer Semester 2019). We have successfully completed implementation of the Q-learning and SARSA algorithms both with and without LVFA for obstacle avoidance using LIDAR ranging data. The agent is tested in a Stage simulator environment and selected results are presented herein. After the training of the agent, the learned policy is transferred to the real turtlebot to test and we have obtained also successful results for the real turtlebot.
     \end{abstract}
     \tableofcontents
 \end{titlingpage}
@@ -50,26 +50,35 @@ We start off by quickly reiterating our problem statement and solution objective
 \item The turtlebot avoids collisions.
 \end{itemize}
 
-\section{Simulation Environment Setup}
+\section{Environment Setup}
 \begin{figure}[ht]
  \centering
- \includegraphics[width=.33\textwidth]{stageSim.png}
+ \includegraphics[width=.8\textwidth]{stage.png}
   \caption{Turtlebot in the Stage simulator environment.}
   \label{fig:stage}
 \end{figure}
-As discussed in our project proposal report, we chose to implement our Reinforcement Learning (RL) based obstacle avoidance solution first in a simulation environment, mainly for quick prototyping purposes. We shall later generalize to the real world using prospective approaches as listed in the proposal report. However, this report is primarily concerned with simulation-only implementation of our solution.
 
-We used the Stage simulator to set-up or training environment as shown in Figure \ref{fig:stage}. Because the LIDAR sensor that is provided on the turtlebot does ranging estimates in a horizontal, 2D-plane, it was preferable to use a 2D simulator such as Stage so as to reduce unnecessary computational overhead.
+As discussed in our project proposal report, we chose to implement our Reinforcement Learning (RL) based obstacle avoidance solution first in a simulation environment, mainly for quick prototyping purposes. We shall later generalize to the real world using prospective approaches as listed in the proposal report.
 
-The model of our environment, the reinforcement-agent and the Q-learning algorithm were implemented using the Python programming language. We used the rospy client API to interface our Python scripts with the Robot Operating System (ROS). The main motivation behind the use of Python is ease of implementation.
-
-Upon starting the turtlebot Stage simulator, we run the \texttt{rl\_agent} node$^\ast$, which interacts with the simulator environment. Our RL agent subsequently starts receiving LIDAR ranging data at every time-step (set to $\delta t = 0.14$ sec.) over \ang{360} with a resolution of \ang{1}. This data is pre-processed (details discussed in section 3.1) and is used to model our problem as an MDP to be solved by our RL-agent. The control signals of the RL-agent are published which moves the turtlebot in the simulation accordingly.
-
-% We used the Stage simulator to test our implementation. We had to manipulate the laser sensor to align with actual turtlebot LIDAR sensor i.e. \ang{360} with \ang{1} resolution. The idea is to run the turtlebot stage simulator then run the "rl\_agent" node which interacts with the simulator environment. We used the rospy library for the sake of simplicity e.g. easy to apply RL algorithms. Our RL agent receives the laser data at each simulation time step which is set to $dt = 0.14sec$, filters and discretizes it. Then, RL agent applies an action i.e. chooses linear and angular velocity from the action space and publishes this action to the topic "/cmd\_vel\_mux/input/teleop" to move the base of the turtlebot. If the turtlebot is so close to the wall which in our case the threshold is $0.3m$, the episode is terminated and the turtlebot restarts to move from the same location.
+We used the Stage simulator as a training environment as shown in Figure \ref{fig:stage}. Because the LIDAR sensor that is provided on the turtlebot does ranging estimates in a horizontal, 2D-plane, it was preferable to use a 2D simulator such as Stage so as to reduce unnecessary computational overhead. Domain randomization technique is exploited to generalize the policy during training and close the gap between simulation and reality. Our RL agent subsequently starts receiving LIDAR ranging data over \ang{360} with a resolution of \ang{1}. This data is pre-processed by a simple filter which observes last N consecutive lidar measurements to replace unreliable laser hits of the last measurement with the reliable ones from the previous measurements. It is expected to enhance the performance of the real turtlebot with this filter. The received filtered scan data then is used to model our problem as an MDP to be solved by our RL-agent. Then, the trained policy in the simulation environment is transferred to real turtlebot 
 
 \section{The RL Agent}
 We implemented our MDP as described in our project proposal report. However, we restate some of the details here because they have either been changed slightly or were not as clearly communicated in the project proposal report.
 
+\begin{figure}[ht]
+ \centering
+ \includegraphics[width=.4\textwidth]{lidar_discretization.pdf}
+  \caption{Discretization of LIDAR.}
+  \label{fig:stage}
+\end{figure}
+
+\begin{figure}[ht]
+ \centering
+ \includegraphics[width=.3\textwidth]{action_space.pdf}
+  \caption{Action Space.}
+  \label{fig:stage}
+\end{figure}
+        
 \subsection{State Space Definition}
 Similar to our proposal, we define the state-space as $\mathcal{S} := \big\{ s\,\big\vert \, s= [\,d^T\:,\,v\,,\,w\,]^T \big\}$, where $d$ is the depth vector observed from the on-board LIDAR sensor. To leverage temporal information, $v$ and $w$ are linear and angular velocities of the robot respectively and are discretized as
 \begin{equation*}
