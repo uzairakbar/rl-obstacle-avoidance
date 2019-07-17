@@ -1,0 +1,32 @@
+experiment_name: "M7_A1_S1_Size3_QL"
+simulations: 5
+episodes: 1000
+save_freq: 100
+save_q: True
+save_rewards: True
+save_lidar: False
+Environment:
+  map: "map7"
+  ActionSpace:
+    space_type: 1
+    read_sensor: True
+  StateSpace:
+    space_type: 1
+    reducer: "features"
+    sensor_model: 0
+    lidar_filter: True
+    Features:
+      features_type: "grid"
+      levels: 4
+      size: 6
+      crop: 120
+      clip_range: 2.0
+RLAgent:
+  algorithm: "qlearning"
+  policy: "greedy"
+  lvfa : True
+  feature_size: 16
+  temperature: 0.05
+  alpha: 0.1
+  gamma: 0.9
+  eligibility: True

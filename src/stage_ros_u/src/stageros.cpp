@@ -579,7 +579,7 @@ StageNode::WorldCallback()
         odom_msg.header.frame_id = mapName("odom", r, static_cast<Stg::Model*>(robotmodel->positionmodel));
         odom_msg.header.stamp = sim_time;
         //odom_msg.header.seq = (uint32_t)robotmodel->positionmodel->Stalled();
-        odom_msg.twist.twist.angular.z = (float)robotmodel->positionmodel->Stalled();
+        odom_msg.twist.twist.linear.z = (float)robotmodel->positionmodel->Stalled();
         robotmodel->odom_pub.publish(odom_msg);
 
         // broadcast odometry transform

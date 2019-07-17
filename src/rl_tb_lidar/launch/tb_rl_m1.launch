@@ -3,6 +3,9 @@
     <arg name="map_file" value=" $(find rl_tb_lidar)/turtlebot_stage/maps/map1/map_1.yaml" />
     <arg name="world_file" value=" $(find rl_tb_lidar)/turtlebot_stage/maps/map1/map_1.world" /> 
     </include>
+
+    <node pkg="rl_tb_lidar" type="lidar_filter.py" name="lidar_filter" output="screen">
+    </node>
     <node pkg="rl_tb_lidar" type="turtlebot_run.py" name="rl_agent_tb" output="screen">
     
     </node>
