@@ -6,7 +6,7 @@ save_q: True
 save_rewards: True
 save_lidar: False
 Environment:
-  map: "map2"
+  map: "map1"
   ActionSpace:
     space_type: 1
     read_sensor: True
