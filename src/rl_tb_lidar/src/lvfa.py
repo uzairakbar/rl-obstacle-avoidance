@@ -19,6 +19,8 @@ class LVFA:
         #init theta
         self.appox_Q = np.zeros(dim)
 
+	self.e = self.appox_Q = np.zeros(dim)
+
     def create_feature_matrix(self):
         b_voll_rank = False
 
@@ -29,7 +31,13 @@ class LVFA:
     def learn(self, s1, a1, r, s2):
         a2 = self.policy(self.get_Q(), s2)
         self.appox_Q = self.appox_Q - self.alpha * (self.appox_Q.T * self.feature_matrix[:, s1 * a1] - r - self.gamma * self.appox_Q.T * self.feature_matrix[:, s2 * a2]) * self.feature_matrix[:, s1 * a1]
+    
+    def learn_ellgibility_trace(self, s1, a1, r, s2):
+        a2 = self.policy(self.get_Q(), s2)
+        self.e = self.lamda * self.gamma *self.e + self.feature_matrix[:, s1 * a1]
+	self.appox_Q = self.appox_Q - self.alpha * (self.appox_Q.T * self.feature_matrix[:, s1 * a1] - r - self.gamma * self.appox_Q.T * self.feature_matrix[:, s2 * a2]) * self.e
 
+    
     def get_Q(self):
         return np.reshape(self.feature_matrix.T.dot(self.appox_Q),(self.nS, self.nA))
 
