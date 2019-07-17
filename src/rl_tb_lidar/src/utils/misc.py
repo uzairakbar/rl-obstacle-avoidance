@@ -8,13 +8,15 @@ class Cropper(object):
     """Crop middle section of array."""
     def __init__(self, size=None):
         if size is not None:
-            self.size = int((360 - size)/2)
+            self.size = int(size/2)
         else:
             self.size = 0
 
     def __call__(self, sample):
         if self.size > 0:
-            sample = sample[self.size:-self.size]
+            temp_1 = sample[0:self.size]
+            temp_2 = sample[360-self.size:360]
+            sample = np.concatenate((temp_2,temp_1), axis=0)
         return sample
 
 
