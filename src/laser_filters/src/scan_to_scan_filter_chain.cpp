@@ -101,6 +101,7 @@ public:
     
     // Advertise output
     output_pub_ = nh_.advertise<sensor_msgs::LaserScan>("scan_filtered", 1000);
+    ROS_WARN("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
 
     // Set up deprecation printout
     deprecation_timer_ = nh_.createTimer(ros::Duration(5.0), boost::bind(&ScanToScanFilterChain::deprecation_warn, this, _1));
