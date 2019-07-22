@@ -1,15 +1,16 @@
-# Applied Reinforcement Learning (SS2019)
-## Group D - Obstacle Avoidance
+# LIDAR Sensor based Obstacle Avoidance through Reinforcement Learning
 
-### Results:
-#### Sensor Model:
-#### State Representation:
-#### Linear Value Function Approximation:
-#### Supplementary Material:
+This project lists all of the deliverables for the TUM project course [Applied Reinforcement Learning](https://www.ldv.ei.tum.de/en/lehre/applied-reinforcement-learning/) (Summer Semester 2019).
+
+## Results:
+### Sensor Model:
+### State Representation:
+### Linear Value Function Approximation:
+### Supplementary Material:
 * Sensor Model: [Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/develop/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb)
 * Auto-Encoders: [Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/develop/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb)
 
-### Instructions:
+## Instructions:
 
 1. Move the `rl_tb_lidar` and `stage_ros_u` folders to `catkin_ws/src` directory.
 2. run `catkin_make` in the `catkin_ws` directory.
