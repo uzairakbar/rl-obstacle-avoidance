@@ -1,11 +1,11 @@
-# LIDAR Sensor based Obstacle Avoidance through Reinforcement Learning
+# LIDAR based Obstacle Avoidance through Reinforcement Learning
 
 This project lists all of the deliverables for the TUM project course [Applied Reinforcement Learning](https://www.ldv.ei.tum.de/en/lehre/applied-reinforcement-learning/) (Summer Semester 2019).
 
 ## Results:
-### Sensor Model:
 ### State Representation:
 ### Linear Value Function Approximation:
+### Sensor Model:
 ### Supplementary Material:
 * Sensor Model: [Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/develop/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb)
 * Auto-Encoders: [Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/develop/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb)
