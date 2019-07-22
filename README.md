@@ -7,8 +7,9 @@ This project lists all of the deliverables for the TUM project course [Applied R
 ### Linear Value Function Approximation:
 ### Sensor Model:
 ### Supplementary Material:
-* Sensor Model: [Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/develop/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb)
-* Auto-Encoders: [Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/develop/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb)
+* [Sensor Model Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/develop/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb)
+* [Auto-Encoders Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/develop/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb)
+* [Source Code](https://gitlab.ldv.ei.tum.de/arl19/group-d/tree/develop/src/rl_tb_lidar/src)
 
 ## Instructions:
 
