@@ -20,3 +20,19 @@ This project lists all of the deliverables for the TUM project course [Applied R
 5. To try different configurations, edit the `config.yaml` file accordingly. Make sure to specify the correct `nA`, `nS` for the reinforcement learning agent (these argument will be computed automatically in the coming versions, including heavy editing of other reinforcement learning agent interface/functionality).
 6. To run different maps change the launch file to e.g. `tb_stage_m2.launch` and use `'map2'` as the `map` argument in `config.yaml` (might be changed later to a command line argument for ease of use).
 
+## Versioning
+
+We version the project with each new deliverable. For the versions available, see the [tags on this repository](https://gitlab.ldv.ei.tum.de/arl19/group-d/tags).
+
+## Authors
+
+* **Akbar, Uzair** - [uzair.akbar@tum.de](mailto:uzair.akbar@tum.de)
+* **Alperen, Gundogan** - [ga53keb@mytum.de](mailto:ga53keb@mytum.de)
+* **Rachid, Ellouze** - [ga63nix@mytum.de](mailto:ga63nix@mytum.de)
+
+See also the list of [contributors](https://gitlab.ldv.ei.tum.de/arl19/group-d/-/graphs/develop).
+
+## Acknowledgments
+
+* [Dr. Hao Shen](http://www.gol.ei.tum.de/index.php?id=15)
+* [Martin Gottwald](http://www.ldv.ei.tum.de/?id=380)
