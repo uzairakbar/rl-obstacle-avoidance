@@ -27,12 +27,12 @@ We version the project with each new deliverable. For the versions available, se
 ## Authors
 
 * **Akbar, Uzair** - [uzair.akbar@tum.de](mailto:uzair.akbar@tum.de)
-* **Alperen, Gundogan** - [ga53keb@mytum.de](mailto:ga53keb@mytum.de)
-* **Rachid, Ellouze** - [ga63nix@mytum.de](mailto:ga63nix@mytum.de)
+* **Gundogan, Alperen** - [ga53keb@mytum.de](mailto:ga53keb@mytum.de)
+* **Ellouze, Rachid** - [ga63nix@mytum.de](mailto:ga63nix@mytum.de)
 
 See also the list of [contributors](https://gitlab.ldv.ei.tum.de/arl19/group-d/-/graphs/develop).
 
-## Acknowledgments
+## Acknowledgements
 
 * [Dr. Hao Shen](http://www.gol.ei.tum.de/index.php?id=15)
 * [Martin Gottwald](http://www.ldv.ei.tum.de/?id=380)
