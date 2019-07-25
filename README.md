@@ -3,13 +3,14 @@
 This project lists all of the deliverables for the TUM project course [Applied Reinforcement Learning](https://www.ldv.ei.tum.de/en/lehre/applied-reinforcement-learning/) (Summer Semester 2019).
 
 ## Results
-### State Representation:
-### Linear Value Function Approximation:
-### Sensor Model:
+* [State Representation](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/master/assets/reward_graphs/state_representation.pdf)
+* [Linear Value Function Approximation](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/master/assets/reward_graphs/lvfa.pdf)
+* [Algorithms](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/master/assets/reward_graphs/algorithms.pdf)
+* [Others](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/master/assets/reward_graphs)
 ### Supplementary Material:
-* [Sensor Model Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/develop/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb)
-* [Auto-Encoders Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/develop/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb)
-* [Source Code](https://gitlab.ldv.ei.tum.de/arl19/group-d/tree/develop/src/rl_tb_lidar/src)
+* [Sensor Model Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/master/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb)
+* [Auto-Encoders Notebook](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/master/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb)
+* [Source Code](https://gitlab.ldv.ei.tum.de/arl19/group-d/tree/master/src/rl_tb_lidar/src)
 
 ## Instructions
 1. Move the `rl_tb_lidar` and `stage_ros_u` folders to `catkin_ws/src` directory.
