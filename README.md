@@ -7,6 +7,9 @@ This project lists all of the deliverables for the TUM project course [Applied R
 * [Linear Value Function Approximation](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs/lvfa.pdf)
 * [Algorithms](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs/algorithms.pdf)
 * [Others](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs)
+## Project Demo.
+* [Simulation Turtlebot](https://youtu.be/tGrZRYJZ-YE)
+* [Real Turtlebot](https://youtu.be/XOWhKis15BE)
 ### Supplementary Material:
 * [Sensor Model Notebook](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb)
 * [Auto-Encoders Notebook](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb)
