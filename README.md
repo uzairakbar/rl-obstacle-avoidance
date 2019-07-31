@@ -3,11 +3,12 @@
 This project lists all of the deliverables for the TUM project course [Applied Reinforcement Learning](https://www.ldv.ei.tum.de/en/lehre/applied-reinforcement-learning/) (Summer Semester 2019).
 
 ## Results
+### Reward Graphs
 * [State Representation](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/master/assets/reward_graphs/state_representation.pdf)
 * [Linear Value Function Approximation](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs/lvfa.pdf)
 * [Algorithms](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs/algorithms.pdf)
 * [Others](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs)
-## Project Demo.
+### Project Demo.
 * [Simulation Turtlebot](https://youtu.be/tGrZRYJZ-YE)
 * [Real Turtlebot](https://youtu.be/XOWhKis15BE)
 ### Supplementary Material:
