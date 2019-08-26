@@ -4,13 +4,16 @@ This project lists all of the deliverables for the TUM project course [Applied R
 
 ## Results
 ### Reward Graphs:
-* [State Representation](https://gitlab.ldv.ei.tum.de/arl19/group-d/blob/master/assets/reward_graphs/state_representation.pdf)
-* [Linear Value Function Approximation](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs/lvfa.pdf)
-* [Algorithms](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs/algorithms.pdf)
-* [Others](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs)
+| State Representation    | Linear Value Function Approximation    | Algorithms    |
+| :---------------------: | :------------------------------------: | :-----------: |
+| ![State Representation](assets/reward_graphs/state_representation.svg | width=240) | ![Linear Value Function Approximation](assets/reward_graphs/lvfa.svg | width=240) | ![Algorithms](assets/reward_graphs/algorithms.svg | width=240) |
+[More graphs](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs).
+
 ### Project Demo.:
-* [Simulation Turtlebot](https://youtu.be/tGrZRYJZ-YE)
-* [Real Turtlebot](https://youtu.be/XOWhKis15BE)
+| Simulation | Real Turtlebot |
+| :---------------------: | :------------------------------------: |
+| ![Simulation](assets/demo/simulation.gif | width=360) | ![Real Turtlebot](assets/demo/real_turtlebot.gif | width=360) |
+
 ### Supplementary Material:
 * [Sensor Model Notebook](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb)
 * [Auto-Encoders Notebook](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb)
@@ -21,9 +24,8 @@ This project lists all of the deliverables for the TUM project course [Applied R
 2. run `catkin_make` in the `catkin_ws` directory.
 3. Run `source devel/setup.bash` command in the `catkin_ws` directory.
 4. Run `roslaunch rl_tb_lidar tb_stage_m1.launch` to launch only stage.
-5. Open an another terminal, go to the directory of the python script e.g. `cd ~/catkin_ws/src/rl_tb_lidar/src` and run `python main.py config.yaml` with a `config.yaml` argument.
-5. To try different configurations, edit the `config.yaml` file accordingly. Make sure to specify the correct `nA`, `nS` for the reinforcement learning agent (these argument will be computed automatically in the coming versions, including heavy editing of other reinforcement learning agent interface/functionality).
-6. To run different maps change the launch file to e.g. `tb_stage_m2.launch` and use `'map2'` as the `map` argument in `config.yaml` (might be changed later to a command line argument for ease of use).
+5. Open an another terminal, go to the directory of the python script e.g. `cd ~/catkin_ws/src/rl_tb_lidar/src` and run `python main.py configs/config.yaml`.
+5. To try different configurations, edit the `configs/config.yaml` file accordingly.
 
 ## Versioning
 
