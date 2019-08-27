@@ -6,13 +6,13 @@ This project lists all of the deliverables for the TUM project course [Applied R
 ### Reward Graphs:
 | State Representation    | Linear Value Function Approximation    | Algorithms    |
 | :---------------------: | :------------------------------------: | :-----------: |
-| ![State Representation](assets/reward_graphs/state_representation.svg | width=240) | ![Linear Value Function Approximation](assets/reward_graphs/lvfa.svg | width=240) | ![Algorithms](assets/reward_graphs/algorithms.svg | width=240) |
+| ![State Representation](assets/reward_graphs/state_representation.svg) | ![Linear Value Function Approximation](assets/reward_graphs/lvfa.svg) | ![Algorithms](assets/reward_graphs/algorithms.svg) |
 [More graphs](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs).
 
 ### Project Demo.:
 | Simulation | Real Turtlebot |
 | :---------------------: | :------------------------------------: |
-| ![Simulation](assets/demo/simulation.gif | width=360) | ![Real Turtlebot](assets/demo/real_turtlebot.gif | width=360) |
+| ![Simulation](assets/demo/simulation.gif) | ![Real Turtlebot](assets/demo/real_turtlebot.gif) |
 
 ### Supplementary Material:
 * [Sensor Model Notebook](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb)
