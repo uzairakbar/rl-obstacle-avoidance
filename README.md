@@ -7,6 +7,7 @@ This project lists all of the deliverables for the TUM project course [Applied R
 | State Representation    | Linear Value Function Approximation    | Algorithms    |
 | :---------------------: | :------------------------------------: | :-----------: |
 | ![State Representation](assets/reward_graphs/state_representation.svg) | ![Linear Value Function Approximation](assets/reward_graphs/lvfa.svg) | ![Algorithms](assets/reward_graphs/algorithms.svg) |
+
 [More graphs](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/assets/reward_graphs).
 
 ### Project Demo.:
