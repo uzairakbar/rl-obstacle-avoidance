@@ -20,6 +20,13 @@ This project lists all of the deliverables for the TUM project course [Applied R
 * [Auto-Encoders Notebook](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb)
 * [Source Code](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src)
 
+## Requirements
+* Python 2.7
+* ROS-Kinetic with turtlebot
+* Catkin
+* Scipy
+* PyTroch
+
 ## Instructions
 1. Move the `rl_tb_lidar` and `stage_ros_u` folders to `catkin_ws/src` directory.
 2. run `catkin_make` in the `catkin_ws` directory.
