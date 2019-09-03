@@ -30,14 +30,12 @@ Environment:
   #     size: 3
   #     crop: 120
   #     clip_range: 2.0
-# Agent and LVFA to be made PROPERLY compatible with
-# the rest of the code, a bit more cleanly written. NOT DONE YET!!!
 RLAgent:
   algorithm: 'sarsa'
   lvfa : True
   policy: "softmax"
-  epsilon: 0.05
-  # temperature : 0.1
+  # epsilon: 0.05
+  temperature : 0.1
   feature_size: 74
   alpha: 0.1
   gamma: 0.9
