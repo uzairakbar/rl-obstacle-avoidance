@@ -34,8 +34,9 @@ RLAgent:
   algorithm: 'sarsa'
   lvfa : True
   policy: "softmax"
-  # epsilon: 0.05
   temperature : 0.1
+  # policy: "eps_greedy"
+  # epsilon: 0.05
   feature_size: 74
   alpha: 0.1
   gamma: 0.9
