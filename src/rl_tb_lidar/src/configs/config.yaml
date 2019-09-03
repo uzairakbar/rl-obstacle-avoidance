@@ -12,24 +12,21 @@ Environment:
     read_sensor: True
   StateSpace:
     space_type: 1
-    reducer: "features"
     sensor_model: 0
+    reducer: "features"
     Features:
       features_type: "tile"
       levels: 4
       size: 3
       crop: 120
       clip_range: 2.0
-  # StateSpace:
-  #   space_type: 1
-  #   reducer: "discretize"
-  #   sensor_model: 0
-  #   Discretizer:
-  #     discretize_type: "grid"
-  #     levels: 4
-  #     size: 3
-  #     crop: 120
-  #     clip_range: 2.0
+    # reducer: "discretize"
+    # Discretizer:
+    #   discretize_type: "grid"
+    #   levels: 4
+    #   size: 3
+    #   crop: 120
+    #   clip_range: 2.0
 RLAgent:
   algorithm: 'sarsa'
   lvfa : True
