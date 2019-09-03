@@ -21,7 +21,7 @@ This project lists all of the deliverables for the TUM project course [Applied R
 * [Source Code](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src)
 
 ## Requirements
-* Python 2.7 (Python 3 for the [sensor-model fitting](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb) and [auto-encoder training](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb))
+* Python 2.7 (Python 3 for [sensor-model fitting](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb) and [auto-encoder training](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb))
 * ROS-Kinetic with turtlebot
 * Catkin
 * Scipy
