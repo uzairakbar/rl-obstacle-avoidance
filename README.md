@@ -24,8 +24,9 @@ This project lists all of the deliverables for the TUM project course [Applied R
 * Python 2.7 (Python 3 for [sensor-model fitting](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/sensormodel/lidar_sensor_model.ipynb) and [auto-encoder training](https://github.com/uzairakbar/rl-obstacle-avoidance/blob/master/src/rl_tb_lidar/src/utils/autoencoders/vae_experiments.ipynb))
 * ROS-Kinetic with turtlebot
 * Catkin
-* Scipy
 * PyTroch
+* Scipy
+* PyYAML
 
 ## Instructions
 1. Move the `rl_tb_lidar` and `stage_ros_u` folders to `catkin_ws/src` directory.
